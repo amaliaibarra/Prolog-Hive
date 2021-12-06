@@ -5,29 +5,24 @@ validate_insertion_xcol([], [_Id,_Color,_Bug,_X,_Y]).
 
 validate_insertion_xcol([[_Idi,_Colori,_Bugi,_Xi,Yi]|Z], [Id,Color,Bug,X,Y]):- 
     Yi < Y,!,
-    write("Yi<Y "), write(Yi),write("\n"), 
     validate_insertion_xcol(Z, [Id,Color,Bug,X,Y]).
 
 validate_insertion_xcol([[_Idi,_Colori,_Bugi,_Xi,Yi]|_Z], [_Id,_Color,_Bug,_X,Y]):- 
-    Yi > Y,
-     write("Yi>Y "), write(Yi),write("\n").
+    Yi > Y.
 
 %checks wether or not a given bug can be added to the board
 validate_insertion([],[_Id,_Color,_Bug,_X,_Y],_IN, _Board). %First Insertion
 validate_insertion([[[Idi,Colori,Bugi,Xi,Yi]|Z]|_R], [Id,Color,Bug,X,Y],IN,Board) :-
     X =:= Xi,!,
-    write("Xi=X "), write(Xi), write("\n"),
     validate_insertion_xcol([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y]),
     check_neighbors(X,Y,Color,Board,IN). 
 validate_insertion([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|R], [Id,Color,Bug,X,Y],IN,Board) :- 
     Xi < X,
     !,
-    write("Xi<X "),write(Xi),write("\n"),
     validate_insertion(R,[Id, Color,Bug, X,Y],IN,Board).
 
 validate_insertion([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|_R], [_Id,Color,_Bug,X,Y],IN,Board) :- 
     Xi > X,
-    write("Xi>X "), write(Xi), write("\n"),
     check_neighbors(X,Y,Color,Board,IN). 
 
 set_true(F):- F = true.
@@ -36,48 +31,40 @@ set_false(F):- F = false.
 
 %compare bugs colors x column
 check_colour_xcol([], [_Color,_X,_Y],F):- 
-    write("No hay nadieeeee ponlo falssoooo\n"),
     set_false(F).
 
 check_colour_xcol([[_Idi,Color,_Bugi,_Xi,Yi]|_Z], [Color,_X,Y],F):- 
     Y =:= Yi,!,
-    write("Yi=Y "), write(Yi), write("\n"),
     set_true(F).
 
 check_colour_xcol([[_Idi,_Colori,_Bugi,_Xi,Yi]|Z], [Color,X,Y],F):- 
     Yi < Y,!, 
-    write("Yi<Y "), write(Yi), write("\n"),
     check_colour_xcol(Z, [Color,X,Y],F).
 
 check_colour_xcol([[_Idi,_Colori,_Bugi,_Xi,Yi]|_Z], [_Color,_X,Y],F):- 
     Yi > Y,
-     write("Yi>Y "), write(Yi), write("\n"),
      set_false(F).
 
 %ccompare bug's colors
 check_colour([],[_Color,_X,_Y],F):-
-    write("No hay nadieeeee ponlo falssoooo\n"),
     set_false(F). %First Insertion
 
 check_colour([[[Idi,Colori,Bugi,Xi,Yi]|Z]|_R], [Color,X,Y],F) :-
     X =:= Xi,
     !,
-    write("Xi=X "), write(Xi), write("\n"),
     check_colour_xcol([[Idi,Colori,Bugi,Xi,Yi]|Z], [Color,X,Y],F). 
 
 check_colour([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|R], [Color,X,Y],F) :- 
     Xi < X,
     !,
-    write("Xi<X "),write(Xi),write("\n"),
     check_colour(R,[Color, X,Y],F).
 
 check_colour([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|_R], [_Color,X,_Y],F) :- 
     Xi > X,
-    write("Xi>X "), write(Xi),write("falsoooo\n"),
     set_false(F). 
 
 
-same_colors(X,Y,C,B,F):- write("entered same colors \n"),check_colour(B,[C,X,Y],F).
+same_colors(X,Y,C,B,F):- check_colour(B,[C,X,Y],F).
 
 %check if any of the tile's neighbors has a different colour
 % check_neighbors(Xi,Yi,C,B,IN):- IN, .
@@ -91,14 +78,13 @@ same_colors(X,Y,C,B,F):- write("entered same colors \n"),check_colour(B,[C,X,Y],
 check_neighbors(Xi,Yi,C,B,IN):-
      IN = 1,
      !,
-     write("first insertion\n"),
      B = [[_E]],
-     (write("caso 1: "),not(same_colors(Xi-1,Yi,C,B,FA1)), FA1, var(FA1),!;
-     write("caso 2: "),not(same_colors(Xi-1,Yi+1,C,B,FA2)), FA2, var(FA2),!;
-     write("caso 3: "),not(same_colors(Xi,Yi-1,C,B,FA3)), write("not same colors"), var(FA3),!,write(FA3), write("var(FA3)\n");
-     write("caso 4: "),not(same_colors(Xi,Yi+1,C,B,FA4)), FA4, var(FA4),!;
-     write("caso 5: "),not(same_colors(Xi+1,Yi-1,C,B,FA5)), FA5, var(FA5),!;
-     write("caso 6: "),not(same_colors(Xi+1,Yi,C,B,FA6)), FA6, var(FA6)).
+     (not(same_colors(Xi-1,Yi,C,B,FA1)), var(FA1),!;
+      not(same_colors(Xi-1,Yi+1,C,B,FA2)), var(FA2),!;
+      not(same_colors(Xi,Yi-1,C,B,FA3)), var(FA3),!;
+      not(same_colors(Xi,Yi+1,C,B,FA4)), var(FA4),!;
+      not(same_colors(Xi+1,Yi-1,C,B,FA5)), var(FA5),!;
+      not(same_colors(Xi+1,Yi,C,B,FA6)), var(FA6)).
 
 %Insert other tile
 check_neighbors(Xi,Yi,C,B,_):- 
