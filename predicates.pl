@@ -1,6 +1,5 @@
 :- (dynamic tile/5).
 
-% adjacents(X, Y, [(X-1, Y),  (X-1, Y+1),  (X, Y-1),  (X, Y+1),  (X+1, Y-1),  (X+1, Y)]).
 adjacents(X, Y, [(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]) :-
     X1 is X-1,
     Y1 is Y,
@@ -22,27 +21,12 @@ same_colour(_Color, []).
 
 same_colour(Color, [Ci|R]):-
     nonvar(Ci), !,
-    write("Hay color\n"),
     Color == Ci,
     same_colour(Color, R).
 
 same_colour(Color, [Ci|R]):-
     var(Ci),
-    write("No color\n"),
     same_colour(Color, R).
-
-% same_colour(Color, [(X,Y)|R]):-
-%     tile(_,Color,X,Y,_),
-%     same_colour(Color, R).
-
-% exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]) :-
-%     (   tile(_, _, X1, Y1, _),!
-%     ;   tile(_, _, X2, Y2, _),!
-%     ;   tile(_, _, X3, Y3, _),!
-%     ;   tile(_, _, X4, Y4, _),!
-%     ;   tile(_, _, X5, Y5, _),!
-%     ;   tile(_, _, X6, Y6, _),!
-%     ).
 
 exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)], [C1, C2, C3, C4, C5, C6]) :-
     (   tile(_, C1, X1, Y1, _),
@@ -59,25 +43,16 @@ check_adjacents(X, Y, AdjsColor) :-
     exist_adjacent(Adjacents, AdjsColor).
 
 validate_insertion(Color, X, Y, 0):-
-    write("EN 0\n"),    
     position_available(X, Y),
-    % adjacents(X, Y, Adjacents),
-    % exist_adjacent(Adjacents),
     check_adjacents(X, Y, AdjsColor),
-    write("Exist adjacent\n"),
     same_colour(Color, AdjsColor).
 
 validate_insertion(_Color, X, Y, 1):-
-    write("EN 1\n"),    
     position_available(X, Y).
 
 
 validate_insertion(_Color, X, Y, 2):-
-    write("EN 2\n"),    
     position_available( X, Y),
-    % adjacents(X, Y, Adjacents),
-    % write(Adjacents),
-    % exist_adjacent(Adjacents),
     check_adjacents(X, Y, _).
 
 add_tile(Bug, Color, X, Y, Level, Move) :-
