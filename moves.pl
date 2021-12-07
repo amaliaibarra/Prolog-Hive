@@ -1,15 +1,23 @@
-:- (dynamic tile/5).
+:- import([board: position_available/2,
+    add_tile/6]).
 
-adjacents(X, Y, [(X-1, Y),  (X-1, Y+1),  (X, Y-1),  (X, Y+1),  (X+1, Y)]).
+move(X1,Y1,X2,Y2):-
+    position_available(X2,Y2),
+    tile(Bug, Colour, X1, Y1, Level),
+    move_tile(Bug,Colour,Level, X1, Y1, X2, Y2).
+
+% move_tile(ant,X1, Y1, X2, Y2). 
+move_tile(queen,Colour,Level, X1,Y1,X2,Y2):-
+    try_move(),
+    remove_tile(queen, Colour, Level,X1,Y1),
+    add_tile(queen, Colour, Level,X2,Y2).
     
-    X2 =:= X1-1,Y2 =:= Y1,!;
-    X2 =:= X1-1,Y2 =:= Y1 + 1,!;
-    X2 =:= X1  ,Y2 =:= Y1-1,!;
-    X2 =:= X1  ,Y2 =:= Y1+1, !;
-    X2 =:= X1+1,Y2 =:= Y1 -1,!;
-    X2 =:= X1+1,Y2 =:= Y1.
 
-move_queen([Id, Color, Bug, X1, Y1],X2,Y2, Board):-
-    validate_queen_move(Board,X1,Y1,X2,Y2),
-    remove([Id, Color, Bug, X1, Y1], New_Board),
-    insert([Id, Color, Bug, X2, Y2], New_Board).
+try_move(queen, Colour, Level, X1, Y1, X2, Y2):-
+    is_adjacent(X1,Y1, X2,Y2),
+    remove_tile(queen, Colour, Level,X1,Y1),
+    check_adjacent(X2,Y2),
+    add_tile(queen, Colour,X2,Y2,Level,0).
+
+add(Bug, Colour,X2,Y2,Level,Move):-
+    add_tile(Bug, Colour,X2,Y2,Level,Move).

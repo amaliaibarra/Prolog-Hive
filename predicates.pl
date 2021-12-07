@@ -1,4 +1,23 @@
+:- module(board,
+          [ position_available/2,
+            add_tile/6
+          ]).
 :- (dynamic tile/5).
+
+is_adjacent(X1, Y1, X2, Y2) :-
+    (   X2=:=X1-1,
+        Y2=:=Y1, !
+    ;   X2=:=X1-1,
+        Y2=:=Y1+1, !
+    ;   X2=:=X1,
+        Y2=:=Y1-1, !
+    ;   X2=:=X1,
+        Y2=:=Y1+1, !
+    ;   X2=:=X1+1,
+        Y2=:=Y1-1, !
+    ;   X2=:=X1+1,
+        Y2=:=Y1
+    ).
 
 adjacents(X, Y, [(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]) :-
     X1 is X-1,
@@ -17,16 +36,16 @@ adjacents(X, Y, [(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)
 position_available(X, Y) :-
     not(tile(_, _, X, Y, _)). 
 
-same_colour(_Color, []).
+same_colour(_Colour, []).
 
-same_colour(Color, [Ci|R]):-
+same_colour(Colour, [Ci|R]):-
     nonvar(Ci), !,
-    Color == Ci,
-    same_colour(Color, R).
+    Colour == Ci,
+    same_colour(Colour, R).
 
-same_colour(Color, [Ci|R]):-
+same_colour(Colour, [Ci|R]):-
     var(Ci),
-    same_colour(Color, R).
+    same_colour(Colour, R).
 
 exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)], [C1, C2, C3, C4, C5, C6]) :-
     (   tile(_, C1, X1, Y1, _),
@@ -38,25 +57,27 @@ exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]
     ;   tile(_, C6, X6, Y6, _),write(C6),!
     ).
 
-check_adjacents(X, Y, AdjsColor) :-
+check_adjacents(X, Y, AdjsColour) :-
     adjacents(X, Y, Adjacents),
-    exist_adjacent(Adjacents, AdjsColor).
+    exist_adjacent(Adjacents, AdjsColour).
 
-validate_insertion(Color, X, Y, 0):-
+validate_insertion(Colour, X, Y, 0):-
     position_available(X, Y),
-    check_adjacents(X, Y, AdjsColor),
-    same_colour(Color, AdjsColor).
+    check_adjacents(X, Y, AdjsColour),
+    same_colour(Colour, AdjsColour).
 
-validate_insertion(_Color, X, Y, 1):-
+validate_insertion(_Colour, X, Y, 1):-
     position_available(X, Y).
 
 
-validate_insertion(_Color, X, Y, 2):-
+validate_insertion(_Colour, X, Y, 2):-
     position_available( X, Y),
     check_adjacents(X, Y, _).
 
-add_tile(Bug, Color, X, Y, Level, Move) :-
-    validate_insertion( Color, X, Y, Move),!,
-    assert(tile(Bug, Color, X, Y, Level)).
+add_tile(Bug, Colour, X, Y, Level, Move) :-
+    validate_insertion( Colour, X, Y, Move),!,
+    assert(tile(Bug, Colour, X, Y, Level)).
 
-
+remove_tile(Bug, Colour, X, Y, Level):-
+    tile(Bug, Colour, X, Y, Level),
+    retract(tile(Bug, Colour, X, Y, Level)).
