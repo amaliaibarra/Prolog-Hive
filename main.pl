@@ -11,17 +11,21 @@ validate_insertion_xcol([[_Idi,_Colori,_Bugi,_Xi,Yi]|_Z], [_Id,_Color,_Bug,_X,Y]
     Yi > Y.
 
 %checks wether or not a given bug can be added to the board
-validate_insertion([],[_Id,_Color,_Bug,_X,_Y],_IN, _Board). %First Insertion
+validate_insertion([],[_, Color, _Bug, X, Y], IN, Board):- 
+    write("No se hizo nadaaa\n"),
+    check_neighbors(X,Y,Color,Board,IN). 
 validate_insertion([[[Idi,Colori,Bugi,Xi,Yi]|Z]|_R], [Id,Color,Bug,X,Y],IN,Board) :-
     X =:= Xi,!,
     validate_insertion_xcol([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y]),
     check_neighbors(X,Y,Color,Board,IN). 
 validate_insertion([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|R], [Id,Color,Bug,X,Y],IN,Board) :- 
+    write("Xi< X\n"),
     Xi < X,
     !,
     validate_insertion(R,[Id, Color,Bug, X,Y],IN,Board).
 
 validate_insertion([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|_R], [_Id,Color,_Bug,X,Y],IN,Board) :- 
+    write("Xi > X\n"),
     Xi > X,
     check_neighbors(X,Y,Color,Board,IN). 
 
@@ -67,17 +71,11 @@ check_colour([[[_Idi,_Colori,_Bugi,Xi,_Yi]|_Z]|_R], [_Color,X,_Y],F) :-
 same_colors(X,Y,C,B,F):- check_colour(B,[C,X,Y],F).
 
 %check if any of the tile's neighbors has a different colour
-% check_neighbors(Xi,Yi,C,B,IN):- IN, .
-%A LA PRIMERA FICHA DEL JUEGO SE LE DEVUELVE TRUE Y YA, pQ SIEMPRE ES POSIBLE INSERTARLA INDEPENDIENTEMENTE DE DONDE LO HAGA
 %Insert second tile in the game (first one for the second player) 
-
-%if this neighbours has a different colour
-% inspect_neighbour(Xi,Yi,C,B,FA):-set_true(FA),not(same_colors(Xi,Yi,C,B,FA)),FA, write("FA is true").
-% check_neighbors(Xi,Yi,C,B,IN):- IN = 1,!, write("first insertion\n"), B = [[E]],(inspect_neighbour(Xi-1,Yi,C,B,FA1); inspect_neighbour(Xi-1,Yi+1,C,B,FA2) ; inspect_neighbour(Xi,Yi-1,C,B,FA3) ; inspect_neighbour(Xi,Yi+1,C,B,FA4);inspect_neighbour(Xi+1,Yi-1,C,B,FA5); inspect_neighbour(Xi+1,Yi,C,B,FA6)).
-
 check_neighbors(Xi,Yi,C,B,IN):-
      IN = 1,
      !,
+     write("Checking neighbors case 1\n"),
      B = [[_E]],
      (not(same_colors(Xi-1,Yi,C,B,FA1)), var(FA1),!;
       not(same_colors(Xi-1,Yi+1,C,B,FA2)), var(FA2),!;
@@ -88,25 +86,58 @@ check_neighbors(Xi,Yi,C,B,IN):-
 
 %Insert other tile
 check_neighbors(Xi,Yi,C,B,_):- 
+    write("Checking neighbors case 2\n"),
     same_colors(Xi-1,Yi,C,B,FA1),
     same_colors(Xi-1,Yi+1,C,B,FA2),
     same_colors(Xi,Yi-1,C,B,FA3),
     same_colors(Xi,Yi+1,C,B,FA4),
     same_colors(Xi+1,Yi-1,C,B,FA5),
     same_colors(Xi+1,Yi,C,B,FA6),
-    (FA1,!; FA2,!; FA3,!; FA4,!; FA5,!; FA6,!).
+    (write("x pasar FA1\n"),FA1,!; FA2,write("x pasar FA1\n"),!; FA3,write("x pasar FA1\n"),!; FA4,write("x pasar FA1\n"),!; FA5,write("x pasar FA1\n"),!; FA6,write("x pasar FA1\n"),!).
 
 
-%board_row, Tile to add, result
-add_tile([], [Id,Color,Bug,X,Y],[Id,Color,Bug,X,Y]).
+%A LA PRIMERA FICHA DEL JUEGO SE LE DEVUELVE TRUE Y YA, pQ SIEMPRE ES POSIBLE INSERTARLA INDEPENDIENTEMENTE DE DONDE LO HAGA
 
-add_tile([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y],[[Idi,Colori,Bugi,Xi,Yi]|R]):-
-     Yi < Y,
-    add_tile(Z, [Id,Color,Bug,X,Y],R).
+add_tile_xcol([], [Id, Color, Bug, X, Y],[[Id, Color, Bug, X, Y]]).
 
-add_tile([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y],[[Id,Color,Bug,X,Y]|[[Idi,Colori,Bugi,Xi,Yi]|Z]]):- Yi > Y.
-% add_tile([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y],L):- Yi > Y, L is[[Id,Color,Bug,X,Y]|Z].
+add_tile_xcol([[ Idi, Colori, Bugi, Xi,Yi]|Z], [Id,Color,Bug,X,Y],[[ Idi, Colori, Bugi, Xi,Yi]|R]):- 
+    Yi < Y,!,
+    add_tile_xcol(Z, [Id,Color,Bug,X,Y], R).
 
+add_tile_xcol([[Idi, Colori, Bugi, Xi,Yi]|Z], [Id, Color, Bug, X,Y],[[Id, Color, Bug, X,Y],[Idi, Colori, Bugi, Xi,Yi]|Z] ):- 
+    Yi > Y.
+
+%checks wether or not a given bug can be added to the board
+add_tile([],[Id,Color,Bug,X,Y], [[[Id,Color,Bug,X,Y]]]). %First Insertion
+
+add_tile([[[Idi,Colori,Bugi,Xi,Yi]|Z]|R], [Id,Color,Bug,X,Y], [Row|R]) :-
+    X =:= Xi,!,
+    add_tile_xcol([[Idi,Colori,Bugi,Xi,Yi]|Z], [Id,Color,Bug,X,Y], Row).
+
+add_tile([[[Idi,Colori,Bugi,Xi,Yi]|Z]|R], [Id,Color,Bug,X,Y],[[[Idi,Colori,Bugi,Xi,Yi]|Z]|W]) :- 
+    Xi < X,
+    !,
+    add_tile(R,[Id, Color,Bug, X,Y], W).
+
+add_tile([[[Idi, Colori, Bugi, Xi, Yi]| Z]| R], [Id, Color, Bug, X, Y],[[[Id, Color, Bug, X, Y]],[[Idi, Colori, Bugi, Xi, Yi]|Z]|R]) :- 
+    Xi > X.
+
+
+insert( [Id, Color, Bug]):- 
+    write("Insert first tile\n"),
+    add_tile([], [Id, Color, Bug, 0, 0], NewBoard), write(NewBoard).
+
+insert( [Id, Color, Bug, X, Y], [[E]]):- 
+    !,
+    write("Insert second tile\n"),
+    validate_insertion([[E]], [Id, Color, Bug, X, Y], 1, [[E]]), 
+    add_tile([[E]], [Id, Color, Bug, X, Y], NewBoard), write(NewBoard).
+
+insert( [Id, Color, Bug, X, Y], Board):- 
+    write("Insert other tile\n"),
+    validate_insertion(Board, [Id, Color, Bug, X, Y], 2, Board), 
+    write("Insertion validated \n"),
+    add_tile(Board, [Id, Color, Bug, X, Y], NewBoard), write(NewBoard).
 
 
 % insert([Id,Color,Bug,X,Y,First]):- validate_insertion([Id,Color,Bug,X,Y,First]), update_board([Id,Color,Bug,X,Y,First]).
