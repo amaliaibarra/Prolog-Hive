@@ -1,11 +1,4 @@
-:- module(predicates,
-          [ position_available/2,
-            add_tile/6,
-            is_adjacent/4,
-            remove_tile/5,
-            check_adjacents/3,
-            tile/5],
-            adjacents/3).
+:- module(predicates, [tile/5, is_adjacent/4, position_available/2, check_adjacents_except/3, check_adjacents/3, add_tile/6, remove_tile/5]).
 
 
 :- (dynamic tile/5).
@@ -55,10 +48,13 @@ same_colour(Colour, [Ci|R]):-
     var(Ci),
     same_colour(Colour, R).
 
-% exist_adjacent1([]).
+exist_adjacent1([(X,Y)|R]):-
+    write("entered exist adjacents1"),
+    tile(_, _, X, Y, _), !.
 
-% exist_adjacent1([(X,Y)|R]):-
-%     tile(_, _, X, Y, _), !; exist_adjacent(R).
+exist_adjacent1([(X,Y)|R]):-
+    write("entered exist adj again"),
+    exist_adjacent1(R).
 
 exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)], [C1, C2, C3, C4, C5, C6]) :-
     (   tile(_, C1, X1, Y1, _),
@@ -70,12 +66,12 @@ exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]
     ;   tile(_, C6, X6, Y6, _),write(C6),!
     ).
 
-% check_adjacents_except(X, Y, Omit) :-
-%     adjacents(X, Y, Adjacents),
-%     write(Adjacents),
-%     remove(Omit, Adjacents, AdjacentsToAnalize),
-%     write(AdjacentsToAnalize),
-%     exist_adjacent1(AdjacentsToAnalize).
+check_adjacents_except(X, Y, Omit) :-
+    adjacents(X, Y, Adjacents),
+    write(Adjacents),
+    delete( Adjacents, Omit, AdjacentsToAnalize),
+    write(AdjacentsToAnalize),
+    exist_adjacent1(AdjacentsToAnalize).
 
 check_adjacents(X, Y, AdjsColour) :-
     adjacents(X, Y, Adjacents),
@@ -90,7 +86,6 @@ validate_insertion(Colour, X, Y, 0):-
 
 validate_insertion(_Colour, X, Y, 1):-
     position_available(X, Y).
-
 
 validate_insertion(_Colour, X, Y, 2):-
     position_available( X, Y),
