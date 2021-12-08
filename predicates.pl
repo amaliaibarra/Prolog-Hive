@@ -48,11 +48,11 @@ same_colour(Colour, [Ci|R]):-
     var(Ci),
     same_colour(Colour, R).
 
-exist_adjacent1([(X,Y)|R]):-
+exist_adjacent1([(X,Y)|_]):-
     write("entered exist adjacents1"),
     tile(_, _, X, Y, _), !.
 
-exist_adjacent1([(X,Y)|R]):-
+exist_adjacent1([(_X,_Y)|R]):-
     write("entered exist adj again"),
     exist_adjacent1(R).
 
