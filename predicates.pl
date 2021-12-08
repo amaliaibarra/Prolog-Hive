@@ -12,10 +12,8 @@ is_adjacent(X1, Y1, X2, Y2) :-
         Y2=:=Y1-1, !
     ;   X2=:=X1,
         Y2=:=Y1+1, !
-    ;   write("Comparing X1-1, Y1+1"),
-        X2=:=X1+1,
-        Y2=:=Y1-1, 
-        write("Equals\n"),!
+    ;   X2=:=X1+1,
+        Y2=:=Y1-1, !
     ;   X2=:=X1+1,
         Y2=:=Y1
     ).
@@ -38,25 +36,19 @@ position_available(X, Y) :-
     not(tile(_, _, X, Y, _)). 
 
 exist_adjacent([(X,Y)|_]):-
-    write("entered exist adjacents1"),
     tile(_, _, X, Y, _), !.
 
 exist_adjacent([(_X,_Y)|R]):-
-    write("entered exist adj again"),
     exist_adjacent(R).
 
 check_adjacents_except(X, Y, Omit) :-
     adjacents(X, Y, Adjacents),
-    write(Adjacents),
     delete( Adjacents, Omit, AdjacentsToAnalize),
-    write(AdjacentsToAnalize),
     exist_adjacent(AdjacentsToAnalize).
 
 check_adjacents(X, Y, Adjacents) :-
     adjacents(X, Y, Adjacents),
-    write(Adjacents),
-    exist_adjacent(Adjacents),
-    write(Adjacents).
+    exist_adjacent(Adjacents).
 
 same_colour(_Colour, []).
 
