@@ -37,59 +37,48 @@ adjacents(X, Y, [(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)
 position_available(X, Y) :-
     not(tile(_, _, X, Y, _)). 
 
-same_colour(_Colour, []).
-
-same_colour(Colour, [Ci|R]):-
-    nonvar(Ci), !,
-    Colour == Ci,
-    same_colour(Colour, R).
-
-same_colour(Colour, [Ci|R]):-
-    var(Ci),
-    same_colour(Colour, R).
-
-exist_adjacent1([(X,Y)|_]):-
+exist_adjacent([(X,Y)|_]):-
     write("entered exist adjacents1"),
     tile(_, _, X, Y, _), !.
 
-exist_adjacent1([(_X,_Y)|R]):-
+exist_adjacent([(_X,_Y)|R]):-
     write("entered exist adj again"),
-    exist_adjacent1(R).
-
-exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)], [C1, C2, C3, C4, C5, C6]) :-
-    (   tile(_, C1, X1, Y1, _),
-        write(C1),!
-    ;   tile(_, C2, X2, Y2, _),write(C2),!
-    ;   tile(_, C3, X3, Y3, _),write(C3),!
-    ;   tile(_, C4, X4, Y4, _),write(C4),!
-    ;   tile(_, C5, X5, Y5, _),write(C5),!
-    ;   tile(_, C6, X6, Y6, _),write(C6),!
-    ).
+    exist_adjacent(R).
 
 check_adjacents_except(X, Y, Omit) :-
     adjacents(X, Y, Adjacents),
     write(Adjacents),
     delete( Adjacents, Omit, AdjacentsToAnalize),
     write(AdjacentsToAnalize),
-    exist_adjacent1(AdjacentsToAnalize).
+    exist_adjacent(AdjacentsToAnalize).
 
-check_adjacents(X, Y, AdjsColour) :-
+check_adjacents(X, Y, Adjacents) :-
     adjacents(X, Y, Adjacents),
     write(Adjacents),
-    exist_adjacent(Adjacents, AdjsColour),
-    write(AdjsColour).
+    exist_adjacent(Adjacents),
+    write(Adjacents).
+
+same_colour(_Colour, []).
+
+same_colour(Colour, [(X, Y)|R]):-
+    tile(_, Colour, X, Y, _ ), !,
+    same_colour(Colour, R).
+
+same_colour(Colour, [(X, Y)|R]):-
+    not(tile(_, _C, X, Y, _ )),
+    same_colour(Colour, R).
 
 validate_insertion(Colour, X, Y, 0):-
     position_available(X, Y),
-    check_adjacents(X, Y, AdjsColour),
-    same_colour(Colour, AdjsColour).
+    check_adjacents(X, Y, Adjs),
+    same_colour(Colour, Adjs).
 
 validate_insertion(_Colour, X, Y, 1):-
     position_available(X, Y).
 
 validate_insertion(_Colour, X, Y, 2):-
     position_available( X, Y),
-    check_adjacents(X, Y, _).
+    check_adjacents(X, Y,_).
 
 add_tile(Bug, Colour, X, Y, Level, Move) :-
     validate_insertion( Colour, X, Y, Move),!,
