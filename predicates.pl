@@ -1,7 +1,12 @@
-:- module(board,
+:- module(predicates,
           [ position_available/2,
-            add_tile/6
+            add_tile/6,
+            is_adjacent/4,
+            remove_tile/5,
+            check_adjacents/3
           ]).
+
+
 :- (dynamic tile/5).
 
 is_adjacent(X1, Y1, X2, Y2) :-
