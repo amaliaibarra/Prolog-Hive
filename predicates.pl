@@ -3,8 +3,9 @@
             add_tile/6,
             is_adjacent/4,
             remove_tile/5,
-            check_adjacents/3
-          ]).
+            check_adjacents/3,
+            tile/5],
+            adjacents/3).
 
 
 :- (dynamic tile/5).
@@ -18,8 +19,10 @@ is_adjacent(X1, Y1, X2, Y2) :-
         Y2=:=Y1-1, !
     ;   X2=:=X1,
         Y2=:=Y1+1, !
-    ;   X2=:=X1+1,
-        Y2=:=Y1-1, !
+    ;   write("Comparing X1-1, Y1+1"),
+        X2=:=X1+1,
+        Y2=:=Y1-1, 
+        write("Equals\n"),!
     ;   X2=:=X1+1,
         Y2=:=Y1
     ).
@@ -52,6 +55,11 @@ same_colour(Colour, [Ci|R]):-
     var(Ci),
     same_colour(Colour, R).
 
+% exist_adjacent1([]).
+
+% exist_adjacent1([(X,Y)|R]):-
+%     tile(_, _, X, Y, _), !; exist_adjacent(R).
+
 exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)], [C1, C2, C3, C4, C5, C6]) :-
     (   tile(_, C1, X1, Y1, _),
         write(C1),!
@@ -62,9 +70,18 @@ exist_adjacent([(X1, Y1),  (X2, Y2),  (X3, Y3),  (X4, Y4),  (X5, Y5),  (X6, Y6)]
     ;   tile(_, C6, X6, Y6, _),write(C6),!
     ).
 
+% check_adjacents_except(X, Y, Omit) :-
+%     adjacents(X, Y, Adjacents),
+%     write(Adjacents),
+%     remove(Omit, Adjacents, AdjacentsToAnalize),
+%     write(AdjacentsToAnalize),
+%     exist_adjacent1(AdjacentsToAnalize).
+
 check_adjacents(X, Y, AdjsColour) :-
     adjacents(X, Y, Adjacents),
-    exist_adjacent(Adjacents, AdjsColour).
+    write(Adjacents),
+    exist_adjacent(Adjacents, AdjsColour),
+    write(AdjsColour).
 
 validate_insertion(Colour, X, Y, 0):-
     position_available(X, Y),
