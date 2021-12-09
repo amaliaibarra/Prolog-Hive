@@ -1,3 +1,8 @@
+:- use_module(predicates,
+              [ tile/5,
+                add_tile/6,
+                remove_tile/5
+              ]).
 
 % enforcing the ONE HIVE RULE: The hive can't be divided by any movement
 % Idea: Do a dfs|bfs (without the tile in the origin) and check if all pieces found are the ones tha findall or bagof returned as tile 
@@ -31,12 +36,30 @@ bfs_1([[X,Y]|R], Seen, [Xd, Yd]):-
 
 diferents((X,Y), (X1,Y1)):- X=\=X1, !; Y=\=Y1.
 
+one_hive_rule_fullfill(_Bug, _Colour, X, Y, _Level) :-
+    findall((X2, Y2), adj((X,Y), (X2, Y2)), Adj),
+    write("Adjacents:"), write(Adj),
+    length(Adj, Len),
+    write("\n Adj's Lenght: "), write(Len), write("\n"),
+    Len =< 1, write("menor o igual q 1"),!.
+    
+one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
+    write("Removing tile\n"),
+    remove_tile(Bug, Colour, X, Y, Level),
+    one_hive_without(X,Y), !,
+    write("Returning tile to original place m2\n"),
+    assert(tile(Bug, Colour, X, Y, Level)), !.
+
+one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
+    write("Returning tile to original place m3\n"),
+    not(assert(tile(Bug, Colour, X, Y, Level))).
+
 one_hive_without(X,Y):- 
     findall([Ax, Ay], adj((X,Y),(Ax, Ay)), [[Ax1, Ay1]|R]), 
-    write("Adyacentes vivos"),
+    write("Adyacentes vivos\n"),
     write([[Ax1, Ay1]|R]),
     write("\n"),
     findall([X2, Y2], (adj((X,Y),(X2, Y2)), diferents((X2, Y2),(Ax1, Ay1)), bfs([Ax1, Ay1], [X2, Y2])), H), 
-    write("Nodos alcanzados"),
+    write("Nodos alcanzados\n"),
     write(H),
     H == R.
