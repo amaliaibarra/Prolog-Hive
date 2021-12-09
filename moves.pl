@@ -8,6 +8,8 @@
                 remove_tile/5
               ]).
 :- use_module(validations, [pilled/2, validate_grasshoper_move/4]).
+:- use_module(bfs, [one_hive_rule_fullfill/5]).
+
 
 try_move(Bug, Colour, X1, Y1, Level, X2, Y2) :-
     remove_tile(Bug, Colour, X1, Y1, Level),
@@ -24,10 +26,14 @@ get_top_bug(Bug, Colour, X, Y, Level) :-
     max_list(Bag, Level),
     tile(Bug, Colour, X, Y, Level).
 
+%moving pillbug
 move(X1, Y1, X2, Y2, X3, Y3) :-
     position_available(X3, Y3), !,
-    tile(pillbug, _, X1, Y1, 0), !,
+    tile(pillbug, Colour, X1, Y1, 0), !,
     not(pilled(X1, Y1)), !, %pillbug is not blocked
+    write("tiene adyacente a donde va\n"),
+    one_hive_rule_fullfill(pillbug, Colour, X1, Y1, 0),
+    write("no rompo la colmena\n"),
     move_tile(pillbug,
               X1,
               Y1,
@@ -37,9 +43,12 @@ move(X1, Y1, X2, Y2, X3, Y3) :-
               Y3,
               _).
     
+%Moving general tile to free position
 move(X1, Y1, X2, Y2) :-
     position_available(X2, Y2),
+    write("position available\n"),
     get_top_bug(Bug, Colour, X1, Y1, Level),
+    write("Bug found in source pos: "), write(Bug+Colour),
     try_move(Bug,
              Colour,
              X1,
@@ -47,6 +56,9 @@ move(X1, Y1, X2, Y2) :-
              Level,
              X2,
              Y2),
+    write("tiene adyacente a donde va\n"),
+    one_hive_rule_fullfill(Bug, Colour, X1, Y1, Level),
+    write("no rompo la colmena\n"),
     move_tile(Bug,
               Colour,
               Level,
@@ -55,6 +67,7 @@ move(X1, Y1, X2, Y2) :-
               X2,
               Y2), !.
 
+%moving beetle to pilled position
 move(X1, Y1, X2, Y2) :-
     not(position_available(X2, Y2)),
     get_top_bug(Bug, Colour, X1, Y1, Level),
@@ -66,6 +79,9 @@ move(X1, Y1, X2, Y2) :-
              Level,
              X2,
              Y2),
+    write("tiene adyacente a donde va"),
+    one_hive_rule_fullfill(Bug, Colour, X1, Y1, Level),
+    write("no rompo la colmena\n"),
     move_tile(beetle,
               Colour,
               Level,

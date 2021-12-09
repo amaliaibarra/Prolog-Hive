@@ -1,3 +1,6 @@
+:- module(bfs,
+          [ one_hive_rule_fullfill/5]).
+
 :- use_module(predicates,
               [ tile/5,
                 add_tile/6,
@@ -8,12 +11,12 @@
 % Idea: Do a dfs|bfs (without the tile in the origin) and check if all pieces found are the ones tha findall or bagof returned as tile 
 %Idea 2: Do a bfs from one of the adjacents and check if the others are reached. If not, the hive is broke.
 
-adj((X,Y), (X2, Y2)):- write("P1"), X2 is X - 1, Y2 is Y, tile(_, _, X2, Y2, _).
-adj((X,Y), (X2, Y2)):- write("P2"), X2 is X, Y2 is Y - 1, tile(_, _, X2, Y2, _).
-adj((X,Y), (X2, Y2)):- write("P3"), X2 is X + 1, Y2 is Y - 1, tile(_, _, X2, Y2, _).
-adj((X,Y), (X2, Y2)):- write("P4"), X2 is X + 1, Y2 is Y, tile(_, _, X2, Y2, _).
-adj((X,Y), (X2, Y2)):- write("P5"), X2 is X, Y2 is Y + 1, tile(_, _, X2, Y2, _).
-adj((X,Y), (X2, Y2)):- write("P6\n"), X2 is X - 1, Y2 is Y + 1, tile(_, _, X2, Y2, _). 
+adj((X,Y), (X2, Y2)):- write("P1"), X2 is X - 1, Y2 is Y, tile(_, _, X2, Y2, 0).
+adj((X,Y), (X2, Y2)):- write("P2"), X2 is X, Y2 is Y - 1, tile(_, _, X2, Y2, 0).
+adj((X,Y), (X2, Y2)):- write("P3"), X2 is X + 1, Y2 is Y - 1, tile(_, _, X2, Y2, 0).
+adj((X,Y), (X2, Y2)):- write("P4"), X2 is X + 1, Y2 is Y, tile(_, _, X2, Y2, 0).
+adj((X,Y), (X2, Y2)):- write("P5"), X2 is X, Y2 is Y + 1, tile(_, _, X2, Y2, 0).
+adj((X,Y), (X2, Y2)):- write("P6\n"), X2 is X - 1, Y2 is Y + 1, tile(_, _, X2, Y2, 0). 
 
 %deben ser los adyacentes q tengan bichos arriba y no contar el que se especifique(q puede ser simplemente quitarlo)
 
