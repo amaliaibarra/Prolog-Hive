@@ -32,7 +32,6 @@ move(X1, Y1, X2, Y2, X3, Y3) :-
     tile(pillbug, Colour, X1, Y1, 0), !,
     not(pilled(X1, Y1)), !, %pillbug is not blocked
     one_hive_rule_fullfill(pillbug, Colour, X1, Y1, 0),
-    write("OHR\n"),
     move_tile(pillbug,
               X1,
               Y1,
@@ -54,7 +53,6 @@ move(X1, Y1, X2, Y2) :-
              X2,
              Y2),
     one_hive_rule_fullfill(Bug, Colour, X1, Y1, Level),
-    write("OHR\n"),
     move_tile(Bug,
               Colour,
               Level,
@@ -76,7 +74,6 @@ move(X1, Y1, X2, Y2) :-
              X2,
              Y2),
     one_hive_rule_fullfill(Bug, Colour, X1, Y1, Level),
-    write("OHR\n"),
     move_tile(beetle,
               Colour,
               Level,
