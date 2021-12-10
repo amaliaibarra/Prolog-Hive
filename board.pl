@@ -1,7 +1,15 @@
 :- module(board,
           [ initialize/0,
             available/2,
-            increase_count/2
+            update_last_move/7,
+            increase_move_count/0,
+            increase_bug_count/2,
+            check_queen_moves/1,
+            is_game_over/1,
+            check_turn/1,
+            can_move/5,
+            print_state/0,
+            print_state/1
           ]).
 :- use_module(bfs, [adj/2]).
 :- use_module(predicates, [tile/5]).
@@ -10,6 +18,7 @@
 :- (dynamic move_count/1).
 :- (dynamic queen_in_game/1).
 :- (dynamic insertion_count/3).
+:- (dynamic last_move/7).
 
 initialize() :-
     %Set number of moves
@@ -44,14 +53,43 @@ initialize() :-
     assert(insertion_count(pillbug, b, 0)),
     
     %Set dummy last move
-    assert(last_move(-1, -1, a, b, c, d)).
+    assert(last_move(-1, -1, a, b, c, d, f)).
 
 available(Bug, Colour) :-
     insertion_count(Bug, Colour, Count),
     max_count(Bug, MaxCount),
     Count<MaxCount.
 
-increase_count(Bug, Colour) :-
+update_last_move(Bug, Colour, X, Y, Level, MovedByPillbug, WithDifferentColour) :-
+    last_move(Bugi,
+              Colouri,
+              Xi,
+              Yi,
+              Leveli,
+              Mi,
+              Di),
+    retract(last_move(Bugi,
+                      Colouri,
+                      Xi,
+                      Yi,
+                      Leveli,
+                      Mi,
+                      Di)),
+    assert(last_move(Bug,
+                     Colour,
+                     X,
+                     Y,
+                     Level,
+                     MovedByPillbug,
+                     WithDifferentColour)).
+
+increase_move_count() :-
+    move_count(Count),
+    retract(move_count(Count)),
+    NewCount is Count+1,
+    assert(move_count(NewCount)).
+
+increase_bug_count(Bug, Colour) :-
     insertion_count(Bug, Colour, Count),
     NewCount=Count+1,
     retract(insertion_count(Bug, Colour, Count)),
@@ -77,4 +115,40 @@ is_surrounded(X, Y) :-
             adj((X, Y),  (Xi, Yi)),
             Adjacents),
     length(Adjacents, 6).
-    
+
+check_turn(b) :-
+    (   last_move(_,
+                  w,
+                  _,
+                  _,
+                  _,
+                  _,
+                  _)
+    ;   last_move(_, b, _, _, _, true, true)
+    ).
+check_turn(w) :-
+    (   last_move(_,
+                  b,
+                  _,
+                  _,
+                  _,
+                  _,
+                  _)
+    ;   last_move(_, w, _, _, _, true, true)
+    ).
+can_move(Bug, Colour, X, Y, Level) :-
+    not(last_move(Bug,
+                  Colour,
+                  X,
+                  Y,
+                  Level,
+                  true,
+                  _)), !.
+
+print_state():-
+    write("Current state of game:\n").
+
+print_state(Loser):-
+    write("Current state of game: \n"),
+    write("Game over, Loser is: "),
+    write(Loser).

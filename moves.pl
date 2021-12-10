@@ -1,3 +1,8 @@
+:- module(moves,
+          [ get_top_bug/5,
+            move/6,
+            move/4
+          ]).
 :- use_module(predicates,
               [ tile/5,
                 is_adjacent/4,
@@ -8,7 +13,12 @@
                 remove_tile/5
               ]).
 :- use_module(validations, [pilled/2, validate_grasshoper_move/4]).
-:- use_module(bfs, [one_hive_rule_fullfill/5, exist_path/7, exist_3tiles_path/7, exist_3tilesjumping_path/7]).
+:- use_module(bfs,
+              [ one_hive_rule_fullfill/5,
+                exist_path/7,
+                exist_3tiles_path/7,
+                exist_3tilesjumping_path/7
+              ]).
 
 
 try_move(Bug, Colour, X1, Y1, Level, X2, Y2) :-
@@ -108,19 +118,37 @@ move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
 
 %check wether or not there is a path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ant, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_path(ant, Colour, X1, Y1, Level,  X2, Y2),
+    exist_path(ant,
+               Colour,
+               X1,
+               Y1,
+               Level,
+               X2,
+               Y2),
     remove_tile(ant, Colour, X1, Y1, Level),
     assert(tile(ant, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(spider, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tiles_path(spider, Colour, X1, Y1, Level, X2, Y2),
+    exist_3tiles_path(spider,
+                      Colour,
+                      X1,
+                      Y1,
+                      Level,
+                      X2,
+                      Y2),
     remove_tile(spider, Colour, X1, Y1, Level),
     assert(tile(spider, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ladybug, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tilesjumping_path(spider, Colour, X1, Y1, Level, X2, Y2),
+    exist_3tilesjumping_path(spider,
+                             Colour,
+                             X1,
+                             Y1,
+                             Level,
+                             X2,
+                             Y2),
     remove_tile(ladybug, Colour, X1, Y1, Level),
     assert(tile(ladybug, Colour, X2, Y2, Level)).
 
