@@ -129,7 +129,6 @@ bfs3tpa([[X, Y, L]|R], Seen, [Xd, Yd]):-
     bfs3tpa(UpdR, UpdSeen, [Xd, Yd]);
     bfs3tpa(R, Seen, [Xd, Yd]).
 
-%arreglar lo de la hormiga de que el tile donde inicia no debe contar como adyacente a uno de sus caminos
 exist_3tiles_path_aux(X1, Y1, X2, Y2):- bfs3tp([X1, Y1], [X2, Y2]), !.
 
 exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
@@ -140,7 +139,7 @@ exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
 exist_3tiles_path(Bug, Colour, X1, Y1, Level, _, _) :-
     not(assert(tile(Bug, Colour, X1, Y1, Level))).
 
-%Spider path
+%LadyBug path
 %Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
 bfs3jp([X,Y], Destination):- bfs3jpa([[X, Y, 0]], [[X, Y]], Destination).
 
@@ -168,7 +167,6 @@ bfs3jpa([[X, Y, L]|R], Seen, [Xd, Yd]):-
     bfs3jpa(UpdR, UpdSeen, [Xd, Yd]);
     bfs3jpa(R, Seen, [Xd, Yd]).
 
-%arreglar lo de la hormiga de que el tile donde inicia no debe contar como adyacente a uno de sus caminos
 exist_3tilesjumping_path_aux(X1, Y1, X2, Y2):- bfs3jp([X1, Y1], [X2, Y2]), !.
 
 exist_3tilesjumping_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
