@@ -1,20 +1,42 @@
 :- use_module(board,
-          [ initialize/0,
-          update_last_move/7,
-            available/2,
-            increase_move_count/0, 
-            check_queen_moves/1,
-            is_game_over/1,
-            check_turn/1,
-            can_move/5,
-            print_state/0,
-            print_state/1
-          ]).
+              [ initialize/0,
+                update_last_move/7,
+                available/2,
+                increase_move_count/0,
+                check_queen_moves/1,
+                is_game_over/1,
+                check_turn/1,
+                can_move/5,
+                print_state/0,
+                print_state/1
+              ]).
 
-:- use_module(moves,[get_top_bug/5,move/6, move/4]).
+:- use_module(moves, [get_top_bug/5, move/6, move/4]).
+:- use_module(predicates, [add_tile/5]).
+
+:- (dynamic move_count/1).
+:- (dynamic tile/5).
 
 start():-
     initialize().
+
+%Check if Bug is available for insertion!!!!!!
+insert_to(Bug, Colour, X, Y):-
+    move_count(0), %Is first insertion
+    add_tile(Bug, Colour, X, Y, 1),
+    increase_move_count(),
+    update_last_move(Bug, Colour, X, Y,0, false,false).
+
+insert_to(Bug, Colour, X, Y):-
+    move_count(1), %Is second insertion
+    add_tile(Bug, Colour, X, Y, 2),
+    increase_move_count(),
+    update_last_move(Bug, Colour, X, Y,0, false,false).
+
+insert_to(Bug, Colour, X, Y):-
+    add_tile(Bug, Colour, X, Y, 0),
+    increase_move_count(),
+    update_last_move(Bug, Colour, X, Y,0, false,false).
 
 move_to(X1,Y1,X2,Y2):-
     get_top_bug(Bug, Colour, X1, Y1, Level),

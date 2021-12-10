@@ -9,7 +9,6 @@
                 position_available/2,
                 check_adjacents_except/3,
                 check_adjacents/3,
-                add_tile/6,
                 remove_tile/5
               ]).
 :- use_module(validations, [pilled/2, validate_grasshoper_move/4]).
@@ -161,6 +160,4 @@ move_tile(pillbug, X1, Y1, X2, Y2, X3, Y3, _) :-
     remove_tile(Bug, Colour, X2, Y2, 0),
     assert(tile(Bug, Colour, X3, Y3, 0)).
 
-add(Bug, Colour, X2, Y2, Level, Move) :-
-    add_tile(Bug, Colour, X2, Y2, Level, Move).
 

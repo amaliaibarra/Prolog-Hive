@@ -1,4 +1,12 @@
-:- module(predicates, [tile/5, is_adjacent/4, position_available/2, check_adjacents_except/3, check_adjacents/3, add_tile/6, remove_tile/5]).
+:- module(predicates,
+          [ tile/5,
+            is_adjacent/4,
+            position_available/2,
+            check_adjacents_except/3,
+            check_adjacents/3,
+            add_tile/5,
+            remove_tile/5
+          ]).
 
 
 :- (dynamic tile/5).
@@ -72,9 +80,9 @@ validate_insertion(_Colour, X, Y, 2):-
     position_available( X, Y),
     check_adjacents(X, Y,_).
 
-add_tile(Bug, Colour, X, Y, Level, Move) :-
+add_tile(Bug, Colour, X, Y, Move) :-
     validate_insertion( Colour, X, Y, Move),!,
-    assert(tile(Bug, Colour, X, Y, Level)).
+    assert(tile(Bug, Colour, X, Y, 0)).
 
 remove_tile(Bug, Colour, X, Y, Level):-
     tile(Bug, Colour, X, Y, Level),
