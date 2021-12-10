@@ -70,13 +70,11 @@ free_adj_tile((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y+1, empty_space_around_hive
 bfsft(Source, Destination):- bfsfta([Source], [Source], Destination).
 bfsfta([[X,Y]|_R], _Seen, [X, Y]).
 bfsfta([[X,Y]|R], Seen, [Xd, Yd]):- 
-    write("Next in path: "), write([X,Y]), write("\n"),
     bagof([X2, Y2],
         (free_adj_tile((X,Y),(X2, Y2)), 
         not(member([X2,Y2], Seen))), Adj),
     append(Seen, Adj, UpdSeen), 
     append(R, Adj, UpdR), !,
-    write("Updated list:"), write(UpdR), write("\n"),
     bfsfta(UpdR, UpdSeen, [Xd, Yd]);
     bfsfta(R, Seen, [Xd, Yd]).
 
@@ -94,32 +92,23 @@ add_element_to_list([], _L, []).
 add_element_to_list([[X,Y]|R], L, [[X,Y,L]|W]):- add_element_to_list(R, L, W).
 
 %Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
-bfs3tp([X,Y], Destination):- write("Modifying source in bfs3tp. Source: "), 
-                            write([X, Y, 0]), 
-                            write(" Seen: "), 
-                            write([X, Y]), 
-                            write(" Destination "),
-                            write(Destination), 
-                            write("\n"),
-                            bfs3tpa([[X, Y, 0]], [[X, Y]], Destination).
+bfs3tp([X,Y], Destination):- bfs3tpa([[X, Y, 0]], [[X, Y]], Destination).
 
-bfs3tpa([[X, Y, 4]|_R], _Seen, [X, Y]):- write("llegue a 4\n"),!,fail.
-bfs3tpa([[X, Y, _L]|_R], _Seen, [X, Y]).
+bfs3tpa([[X, Y, 4]|_R], _Seen, [X, Y]):- !,fail.
+bfs3tpa([[X, Y, 3]|_R], _Seen, [X, Y]).
 bfs3tpa([[X, Y, L]|R], Seen, [Xd, Yd]):- 
-    write("Next in path: "), write([X,Y]), write(" Level "), write(L), write("\n"),
     bagof([X2, Y2],
         (free_adj_tile((X,Y),(X2, Y2)), 
         not(member([X2,Y2], Seen))), Adj),
     LP is L+1,
     add_element_to_list(Adj, LP, NewAdj),
-    write("Updated list:"), write(NewAdj), write("\n"),
     append(Seen, Adj, UpdSeen), 
     append(R, NewAdj, UpdR), !,
     bfs3tpa(UpdR, UpdSeen, [Xd, Yd]);
     bfs3tpa(R, Seen, [Xd, Yd]).
 
 %arreglar lo de la hormiga de que el tile donde inicia no debe contar como adyacente a uno de sus caminos
-exist_3tiles_path_aux(X1, Y1, X2, Y2):- write("Entering 3tp aux \n"), bfs3tp([X1, Y1], [X2, Y2]), !.
+exist_3tiles_path_aux(X1, Y1, X2, Y2):- bfs3tp([X1, Y1], [X2, Y2]), !.
 
 exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
     remove_tile(Bug, Colour, X1, Y1, Level),
