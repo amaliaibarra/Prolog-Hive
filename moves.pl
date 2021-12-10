@@ -135,6 +135,7 @@ move_tile(grasshopper, Colour, Level, X1, Y1, X2, Y2) :-
 
 move_tile(queen, Colour, Level, X1, Y1, X2, Y2) :-
     write("Moving queen\n"),
+    is_adjacent(X1,Y1, X2, Y2),
     %a;adir comprobacion de si es adyacente la pos a la que va
     remove_tile(Bug, Colour, X1, Y1, Level),%QUITAR queen AQUI
     assert(tile(Bug, Colour, X2, Y2, Level)).%QUITAR queen AQUI
@@ -145,10 +146,12 @@ move_tile(mosquito, Colour, Level, X1, Y1, X2, Y2) :-
 
 move_tile(beetle, Colour, Level, X1, Y1, X2, Y2) :-
     write("Moving beetle\n"),
+    is_adjacent(X1,Y1, X2, Y2),
     beetle_move(beetle, Colour, Level, X1, Y1, X2, Y2).
 
 move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
     write("Moving pillbug\n"),
+    is_adjacent(X1,Y1, X2, Y2),
     %a;adir comprobacion de si es adyacente la pos a la que va
     remove_tile(Bug, Colour, X1, Y1, Level),%QUITAR pillbug AQUI
     assert(tile(Bug, Colour, X2, Y2, Level)).%QUITAR pillbug AQUI
