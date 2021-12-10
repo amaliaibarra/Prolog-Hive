@@ -1,14 +1,23 @@
+:- module(moves,
+          [ get_top_bug/5,
+            move/6,
+            move/4
+          ]).
 :- use_module(predicates,
               [ tile/5,
                 is_adjacent/4,
                 position_available/2,
                 check_adjacents_except/3,
                 check_adjacents/3,
-                add_tile/6,
                 remove_tile/5
               ]).
 :- use_module(validations, [pilled/2, validate_grasshoper_move/4]).
-:- use_module(bfs, [one_hive_rule_fullfill/5, exist_path/7, exist_3tiles_path/7, exist_3tilesjumping_path/7]).
+:- use_module(bfs,
+              [ one_hive_rule_fullfill/5,
+                exist_path/7,
+                exist_3tiles_path/7,
+                exist_3tilesjumping_path/7
+              ]).
 
 
 try_move(Bug, Colour, X1, Y1, Level, X2, Y2) :-
@@ -130,21 +139,39 @@ move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
 
 %check wether or not there is a path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ant, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_path(Bug, Colour, X1, Y1, Level,  X2, Y2),
-    remove_tile(Bug, Colour, X1, Y1, Level),
-    assert(tile(Bug, Colour, X2, Y2, Level)).
+    exist_path(ant,
+               Colour,
+               X1,
+               Y1,
+               Level,
+               X2,
+               Y2),
+    remove_tile(ant, Colour, X1, Y1, Level),
+    assert(tile(ant, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(spider, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2),
-    remove_tile(Bug, Colour, X1, Y1, Level),
-    assert(tile(Bug, Colour, X2, Y2, Level)).
+    exist_3tiles_path(spider,
+                      Colour,
+                      X1,
+                      Y1,
+                      Level,
+                      X2,
+                      Y2),
+    remove_tile(spider, Colour, X1, Y1, Level),
+    assert(tile(spider, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ladybug, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tilesjumping_path(Bug, Colour, X1, Y1, Level, X2, Y2),
-    remove_tile(Bug, Colour, X1, Y1, Level),
-    assert(tile(Bug, Colour, X2, Y2, Level)).
+    exist_3tilesjumping_path(spider,
+                             Colour,
+                             X1,
+                             Y1,
+                             Level,
+                             X2,
+                             Y2),
+    remove_tile(ladybug, Colour, X1, Y1, Level),
+    assert(tile(ladybug, Colour, X2, Y2, Level)).
 
 move_tile(pillbug, X1, Y1, X2, Y2, X3, Y3, _) :-
     is_adjacent(X1, Y1, X3, Y3), !,
@@ -155,6 +182,4 @@ move_tile(pillbug, X1, Y1, X2, Y2, X3, Y3, _) :-
     remove_tile(Bug, Colour, X2, Y2, 0),
     assert(tile(Bug, Colour, X3, Y3, 0)).
 
-add(Bug, Colour, X2, Y2, Level, Move) :-
-    add_tile(Bug, Colour, X2, Y2, Level, Move).
 

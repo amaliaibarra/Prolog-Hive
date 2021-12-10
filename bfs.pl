@@ -6,12 +6,7 @@
             exist_3tilesjumping_path/7
           ]).
 
-:- use_module(predicates,
-              [ tile/5,
-                add_tile/6,
-                remove_tile/5,
-                check_adjacents/3
-              ]).
+:- use_module(predicates, [tile/5, remove_tile/5, check_adjacents/3]).
 
 
 adj((X, Y),  (X2, Y2)) :-
