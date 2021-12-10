@@ -1,10 +1,11 @@
 :- module(board,
-          [ initialize/0,
+          [ move_count/1,
+            initialize/0,
             available/2,
             update_last_move/7,
             increase_move_count/0,
             increase_bug_count/2,
-            check_queen_moves/1,
+            check_queen_moves/2,
             is_game_over/1,
             check_turn/1,
             can_move/5,
@@ -56,8 +57,8 @@ initialize() :-
     assert(last_move(-1, -1, a, b, c, d, f)).
 
 available(Bug, Colour) :-
-    insertion_count(Bug, Colour, Count),
-    max_count(Bug, MaxCount),
+    insertion_count(Bug, Colour, Count), !,
+    max_count(Bug, MaxCount), !,
     Count<MaxCount.
 
 update_last_move(Bug, Colour, X, Y, Level, MovedByPillbug, WithDifferentColour) :-
@@ -67,21 +68,21 @@ update_last_move(Bug, Colour, X, Y, Level, MovedByPillbug, WithDifferentColour) 
               Yi,
               Leveli,
               Mi,
-              Di),
+              Di), !,
     retract(last_move(Bugi,
                       Colouri,
                       Xi,
                       Yi,
                       Leveli,
                       Mi,
-                      Di)),
+                      Di)), !,
     assert(last_move(Bug,
                      Colour,
                      X,
                      Y,
                      Level,
                      MovedByPillbug,
-                     WithDifferentColour)).
+                     WithDifferentColour)), !.
 
 increase_move_count() :-
     move_count(Count),
@@ -90,21 +91,24 @@ increase_move_count() :-
     assert(move_count(NewCount)).
 
 increase_bug_count(Bug, Colour) :-
-    insertion_count(Bug, Colour, Count),
-    NewCount=Count+1,
-    retract(insertion_count(Bug, Colour, Count)),
-    assert(insertion_count(Bug, Colour, NewCount)).
+    insertion_count(Bug, Colour, Count), !,
+    NewCount is Count+1,
+    retract(insertion_count(Bug, Colour, Count)), !,
+    assert(insertion_count(Bug, Colour, NewCount)), !.
 
-check_queen_moves(Colour) :-
-    queen_in_game(Colour).
+check_queen_moves(Bug, Colour) :-
+    (   tile(queen, Colour, _, _, _),
+        write("HERE"), !
+    ;   Bug==queen
+    ).
 
-check_queen_moves(w) :-
+check_queen_moves(_, w) :-
+    move_count(Count),
+    Count<6.
+
+check_queen_moves(_, b) :-
     move_count(Count),
     Count<7.
-
-check_queen_moves(b) :-
-    move_count(Count),
-    Count<8.
 
 is_game_over(Colour) :-
     tile(queen, Colour, X, Y, _),
@@ -145,10 +149,10 @@ can_move(Bug, Colour, X, Y, Level) :-
                   true,
                   _)), !.
 
-print_state():-
+print_state() :-
     write("Current state of game:\n").
 
-print_state(Loser):-
+print_state(Loser) :-
     write("Current state of game: \n"),
     write("Game over, Loser is: "),
     write(Loser).
