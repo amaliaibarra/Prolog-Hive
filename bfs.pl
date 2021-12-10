@@ -1,5 +1,5 @@
 :- module(bfs,
-          [ one_hive_rule_fullfill/5, exist_path/7, exist_3tiles_path/7]).
+          [ one_hive_rule_fullfill/5, exist_path/7, exist_3tiles_path/7, exist_3tilesjumping_path/7]).
 
 :- use_module(predicates,
               [ tile/5,
@@ -50,14 +50,11 @@ one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
 one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
     not(assert(tile(Bug, Colour, X, Y, Level))).
 
+%Bug's moves
 %CHECK FOR PATH AROUND THE HIVE FROM SOURCE TO DESTINATION
 empty_space_around_hive((X, Y)):- 
     not(tile(_, _, X, Y, 0)), 
     check_adjacents(X, Y,_).
-
-% empty_space_around_hive((X, Y), (X2, Y2)):- 
-%     not(tile(_, _, X2, Y2, 0)), 
-%     check_adjacents_except(X2, Y2, (X, Y)).
 
 free_adj_tile((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y, empty_space_around_hive((X2, Y2)).
 free_adj_tile((X,Y), (X2, Y2)):- X2 is X, Y2 is Y-1, empty_space_around_hive((X2, Y2)).
@@ -66,6 +63,7 @@ free_adj_tile((X,Y), (X2, Y2)):- X2 is X + 1, Y2 is Y, empty_space_around_hive((
 free_adj_tile((X,Y), (X2, Y2)):- X2 is X, Y2 is Y+1, empty_space_around_hive((X2, Y2)).
 free_adj_tile((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y+1, empty_space_around_hive((X2, Y2)).
 
+%Ant path
 %Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
 bfsft(Source, Destination):- bfsfta([Source], [Source], Destination).
 bfsfta([[X,Y]|_R], _Seen, [X, Y]).
@@ -91,6 +89,7 @@ exist_path(Bug, Colour, X1, Y1, Level, _, _) :-
 add_element_to_list([], _L, []).
 add_element_to_list([[X,Y]|R], L, [[X,Y,L]|W]):- add_element_to_list(R, L, W).
 
+%Spider path
 %Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
 bfs3tp([X,Y], Destination):- bfs3tpa([[X, Y, 0]], [[X, Y]], Destination).
 
@@ -116,4 +115,47 @@ exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
     assert(tile(Bug, Colour, X1, Y1, Level)), !.
 
 exist_3tiles_path(Bug, Colour, X1, Y1, Level, _, _) :-
+    not(assert(tile(Bug, Colour, X1, Y1, Level))).
+
+%Spider path
+%Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
+bfs3jp([X,Y], Destination):- bfs3jpa([[X, Y, 0]], [[X, Y]], Destination).
+
+bfs3jpa([[X, Y, 2]|R], Seen, [Xd, Yd]):- 
+    write("Entered bfs level 2 w/: Source "), write([[X, Y, 2]|R]), write(" Destination "), write([Xd, Yd]),write("\n"),
+    bagof([X2, Y2],
+        (free_adj_tile((X,Y),(X2, Y2)), not(member([X2, Y2, 3], Seen))), Adj),
+    add_element_to_list(Adj, 3, NewAdj),
+    write("New adjs: "), write(NewAdj), write("\n"),
+    append(Seen, NewAdj, UpdSeen), 
+    append(R, NewAdj, UpdR), !,
+    bfs3jpa(UpdR, UpdSeen, [Xd, Yd]);
+    bfs3jpa(R, Seen, [Xd, Yd]).
+
+bfs3jpa([[X, Y, 3]|_R], _Seen, [X, Y]).
+
+bfs3jpa([[X, Y, 4]|R], Seen, [X, Y]):- write("Reached 4, ignore and proceed\n"), !, bfs3jpa(R, Seen, [X, Y]).
+
+bfs3jpa([[X, Y, L]|R], Seen, [Xd, Yd]):- 
+    L < 4,
+    write("Entered bfs w/: Source "), write([[X, Y, L]|R]), write(" Destination "), write([Xd, Yd]),write("\n"),
+    LP is L+1,
+    bagof([X2, Y2],
+        (adj((X,Y),(X2, Y2)), not(member([X2, Y2, LP], Seen))), Adj),
+    add_element_to_list(Adj, LP, NewAdj),
+    write("New adjs: "), write(NewAdj), write("\n"),
+    append(Seen, NewAdj, UpdSeen), 
+    append(R, NewAdj, UpdR), !,
+    bfs3jpa(UpdR, UpdSeen, [Xd, Yd]);
+    bfs3jpa(R, Seen, [Xd, Yd]).
+
+%arreglar lo de la hormiga de que el tile donde inicia no debe contar como adyacente a uno de sus caminos
+exist_3tilesjumping_path_aux(X1, Y1, X2, Y2):- write("Entered 3tjp \n"), bfs3jp([X1, Y1], [X2, Y2]), !.
+
+exist_3tilesjumping_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
+    remove_tile(Bug, Colour, X1, Y1, Level),
+    exist_3tilesjumping_path_aux(X1, Y1, X2, Y2), !,
+    assert(tile(Bug, Colour, X1, Y1, Level)), !.
+
+exist_3tilesjumping_path(Bug, Colour, X1, Y1, Level, _, _) :-
     not(assert(tile(Bug, Colour, X1, Y1, Level))).
