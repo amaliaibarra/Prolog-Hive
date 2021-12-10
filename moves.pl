@@ -77,12 +77,24 @@ validate_pillbug_power(_Bugname, Colour, X1, Y1, Level, X2, Y2, X3, Y3):-
               Y3,
               _).
 
+beetle_move(_B, Colour, Level, X1, Y1, X2, Y2):-
+    findall(L,
+            tile(_, _, X2, Y2, L),
+            Bag),
+    NonEmptyBag=[-1|Bag],
+    max_list(NonEmptyBag, MaxLevel),
+    NewLevel is MaxLevel+1,
+    remove_tile(Bug, Colour, X1, Y1, Level),%QUITAR beetle AQUI
+    assert(tile(Bug, Colour, X2, Y2, NewLevel)).%QUITAR beetle AQUI
+
 %(X1,Y1): mosquito's coordinates, (X2, Y2): adj to inherit powers of, (X3, Y3):piece to move, (X4, Y4): place to move to
 move(X1, Y1, X2, Y2, X3, Y3, X4, Y4):- 
     write("Mosquito: "), write(X1-Y1), write(" as pillbug: "), write(X2-Y2), write(" moving: "), write(X3-Y4), write(" to: "), write(X4-Y4), write("\n"),
     get_top_bug(Bug1, Colour1, X1, Y1, Level1),
     Bug1 == mosquito,!,
     write("Confirmed is moquito \n"),
+    Level1 == 0,
+    write("In level 0\n"),
     is_adjacent(X1, Y1, X2, Y2),
     tile(pillbug, _Colour2, X2, Y2, _Level2),
     validate_pillbug_power(mosquito, Colour1, X1, Y1, Level1, X3, Y3, X4, Y4).
@@ -98,11 +110,15 @@ move(X1, Y1, X2, Y2, X3, Y3) :-
 move(X1, Y1, X2, Y2, X3, Y3):- 
     write("Mosquito moving as adj \n"),
     get_top_bug(Bug1, Colour1, X1, Y1, Level1),
-    Bug1 == mosquito,
+    Bug1 == mosquito,!,
     write("Confirmed, Is mosquito \n"),
+    Level1 == 0,
+    write("In level 0\n"),
     is_adjacent(X1, Y1, X2, Y2),
     write("Piece to inherit power of is adjacent \n"),
-    tile(Bug2, _Colour2, X2, Y2, _Level2),
+    get_top_bug(Bug2, _Colour2, X2, Y2, _Level2),
+    not(member(Bug2, [mosquito])),
+    write("Adj is not mosquito \n"),
     write("Adjacent is: "), write(Bug2), write("\n"),
     validate_general_move(Bug1, Colour1, X1, Y1, Level1, X3, Y3, Bug2),!.
 
@@ -123,16 +139,13 @@ move_tile(queen, Colour, Level, X1, Y1, X2, Y2) :-
     remove_tile(Bug, Colour, X1, Y1, Level),%QUITAR queen AQUI
     assert(tile(Bug, Colour, X2, Y2, Level)).%QUITAR queen AQUI
 
+move_tile(mosquito, Colour, Level, X1, Y1, X2, Y2) :-
+    write("Moving mosquito in second level(as beetle)\n"),
+    beetle_move(mosquito, Colour, Level, X1, Y1, X2, Y2).
+
 move_tile(beetle, Colour, Level, X1, Y1, X2, Y2) :-
     write("Moving beetle\n"),
-    findall(L,
-            tile(_, _, X2, Y2, L),
-            Bag),
-    NonEmptyBag=[-1|Bag],
-    max_list(NonEmptyBag, MaxLevel),
-    NewLevel is MaxLevel+1,
-    remove_tile(Bug, Colour, X1, Y1, Level),%QUITAR beetle AQUI
-    assert(tile(Bug, Colour, X2, Y2, NewLevel)).%QUITAR beetle AQUI
+    beetle_move(beetle, Colour, Level, X1, Y1, X2, Y2).
 
 move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
     write("Moving pillbug\n"),
