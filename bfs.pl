@@ -1,10 +1,12 @@
 :- module(bfs,
-          [ one_hive_rule_fullfill/5]).
+          [ one_hive_rule_fullfill/5, exist_path/4]).
 
 :- use_module(predicates,
               [ tile/5,
                 add_tile/6,
-                remove_tile/5
+                remove_tile/5,
+                check_adjacents/3,
+                check_adjacents_except/3
               ]).
 
 
@@ -48,3 +50,29 @@ one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
 
 one_hive_rule_fullfill(Bug, Colour, X, Y, Level) :-
     not(assert(tile(Bug, Colour, X, Y, Level))).
+
+%CHECK FOR PATH AROUND THE HIVE FROM SOURCE TO DESTINATION
+empty_space_around_hive((X, Y), (X2, Y2)):- 
+    not(tile(_, _, X2, Y2, 0)), 
+    check_adjacents_except(X2, Y2, (X, Y)).
+
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y, empty_space_around_hive((X, Y), (X2, Y2)).
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X, Y2 is Y-1, empty_space_around_hive((X, Y), (X2, Y2)).
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X + 1, Y2 is Y-1, empty_space_around_hive((X, Y), (X2, Y2)).
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X + 1, Y2 is Y, empty_space_around_hive((X, Y), (X2, Y2)).
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X, Y2 is Y+1, empty_space_around_hive((X, Y), (X2, Y2)).
+free_adj_tile((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y+1, empty_space_around_hive((X, Y), (X2, Y2)).
+
+%Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
+bfs2(Source, Destination):- bfs_22([Source], [Source], Destination).
+bfs_22([[X,Y]|_R], _Seen, [X, Y]).
+bfs_22([[X,Y]|R], Seen, [Xd, Yd]):- 
+    bagof([X2, Y2],
+        (free_adj_tile((X,Y),(X2, Y2)), 
+        not(member([X2,Y2], Seen))), Adj),
+    append(Seen, Adj, UpdSeen), 
+    append(R, Adj, UpdR), !,
+    bfs_22(UpdR, UpdSeen, [Xd, Yd]);
+    bfs_22(R, Seen, [Xd, Yd]).
+
+exist_path(X1, Y1, X2, Y2):- bfs2([X1, Y1], [X2, Y2]), !.
