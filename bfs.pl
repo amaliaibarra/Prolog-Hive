@@ -1,5 +1,5 @@
 :- module(bfs,
-          [ one_hive_rule_fullfill/5, exist_path/4]).
+          [ one_hive_rule_fullfill/5, exist_path/4, exist_3tiles_path/7]).
 
 :- use_module(predicates,
               [ tile/5,
@@ -76,3 +76,42 @@ bfs_22([[X,Y]|R], Seen, [Xd, Yd]):-
     bfs_22(R, Seen, [Xd, Yd]).
 
 exist_path(X1, Y1, X2, Y2):- bfs2([X1, Y1], [X2, Y2]), !.
+
+add_element_to_list([], _L, []).
+add_element_to_list([[X,Y]|R], L, [[X,Y,L]|W]):- add_element_to_list(R, L, W).
+
+%Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
+bfs3tp([X,Y], Destination):- write("Modifying source in bfs3tp. Source: "), 
+                            write([X, Y, 0]), 
+                            write(" Seen: "), 
+                            write([X, Y]), 
+                            write(" Destination "),
+                            write(Destination), 
+                            write("\n"),
+                            bfs3tpa([[X, Y, 0]], [[X, Y]], Destination).
+
+bfs3tpa([[X, Y, 4]|_R], _Seen, [X, Y]):- write("llegue a 4\n"),!,fail.
+bfs3tpa([[X, Y, _L]|_R], _Seen, [X, Y]).
+bfs3tpa([[X, Y, L]|R], Seen, [Xd, Yd]):- 
+    write("Next in path: "), write([X,Y]), write(" Level "), write(L), write("\n"),
+    bagof([X2, Y2],
+        (free_adj_tile((X,Y),(X2, Y2)), 
+        not(member([X2,Y2], Seen))), Adj),
+    LP is L+1,
+    add_element_to_list(Adj, LP, NewAdj),
+    write("Updated list:"), write(NewAdj), write("\n"),
+    append(Seen, Adj, UpdSeen), 
+    append(R, NewAdj, UpdR), !,
+    bfs3tpa(UpdR, UpdSeen, [Xd, Yd]);
+    bfs3tpa(R, Seen, [Xd, Yd]).
+
+%arreglar lo de la hormiga de que el tile donde inicia no debe contar como adyacente a uno de sus caminos
+exist_3tiles_path_aux(X1, Y1, X2, Y2):- write("Entering 3tp aux \n"), bfs3tp([X1, Y1], [X2, Y2]), !.
+
+exist_3tiles_path(Bug, Colour, X1, Y1, Level, X2, Y2) :-
+    remove_tile(Bug, Colour, X1, Y1, Level),
+    exist_3tiles_path_aux(X1, Y1, X2, Y2), !,
+    assert(tile(Bug, Colour, X1, Y1, Level)), !.
+
+exist_3tiles_path(Bug, Colour, X1, Y1, Level, _, _) :-
+    not(assert(tile(Bug, Colour, X1, Y1, Level))).
