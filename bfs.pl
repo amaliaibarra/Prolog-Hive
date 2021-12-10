@@ -1,19 +1,35 @@
 :- module(bfs,
-          [ one_hive_rule_fullfill/5]).
+          [ adj/2,
+            one_hive_rule_fullfill/5
+          ]).
 
-:- use_module(predicates,
-              [ tile/5,
-                add_tile/6,
-                remove_tile/5
-              ]).
+:- use_module(predicates, [tile/5, add_tile/6, remove_tile/5]).
 
 
-adj((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y, tile(_, _, X2, Y2, 0).
-adj((X,Y), (X2, Y2)):- X2 is X, Y2 is Y - 1, tile(_, _, X2, Y2, 0).
-adj((X,Y), (X2, Y2)):- X2 is X + 1, Y2 is Y - 1, tile(_, _, X2, Y2, 0).
-adj((X,Y), (X2, Y2)):- X2 is X + 1, Y2 is Y, tile(_, _, X2, Y2, 0).
-adj((X,Y), (X2, Y2)):- X2 is X, Y2 is Y + 1, tile(_, _, X2, Y2, 0).
-adj((X,Y), (X2, Y2)):- X2 is X - 1, Y2 is Y + 1, tile(_, _, X2, Y2, 0). 
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X-1,
+    Y2 is Y,
+    tile(_, _, X2, Y2, 0).
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X,
+    Y2 is Y-1,
+    tile(_, _, X2, Y2, 0).
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X+1,
+    Y2 is Y-1,
+    tile(_, _, X2, Y2, 0).
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X+1,
+    Y2 is Y,
+    tile(_, _, X2, Y2, 0).
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X,
+    Y2 is Y+1,
+    tile(_, _, X2, Y2, 0).
+adj((X, Y),  (X2, Y2)) :-
+    X2 is X-1,
+    Y2 is Y+1,
+    tile(_, _, X2, Y2, 0). 
 
 %Source in the form [X,Y]: Coordinates of the origin, Adj in the form [X,Y]: destination
 bfs(Source, Destination):- bfs_1([Source], [Source], Destination).
