@@ -70,7 +70,7 @@ move_to(X1,Y1,X2,Y2):-
     tile(Bug, Colour, X2, Y2, NewLevel),
     update_last_move(Bug, Colour, X2, Y2, NewLevel, false,false),
     increase_move_count(),
-    not(is_game_over(_)),!,
+    not(is_game_over()),!,
     print_state().
 
 move_to(_,_,_,_):-
@@ -85,7 +85,7 @@ move_to(X1,Y1,X2,Y2,X3,Y3):-
     get_top_bug(Bugi, Colouri, X3, Y3, NewLevel),
     update_last_move(Bugi, Colouri, X3, Y3, NewLevel, true,true),
     increase_move_count(),
-    not(is_game_over(_)),!,
+    not(is_game_over()),!,
     print_state().
 
 move_to(_,_,_,_,_,_):-
@@ -100,7 +100,7 @@ move_to(X1,Y1,X2,Y2,X3,Y3,X4,Y4):-
     get_top_bug(Bugi, Colouri, X4, Y4, NewLevel),
     update_last_move(Bugi, Colouri, X4, Y4, NewLevel, true,true),
     increase_move_count(),
-    not(is_game_over(_)),!,
+    not(is_game_over()),!,
     print_state().
 
 move_to(_,_,_,_,_,_,_,_):-
