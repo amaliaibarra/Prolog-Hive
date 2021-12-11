@@ -9,7 +9,8 @@
             is_game_over/0,
             check_turn/1,
             can_move/5,
-            print_state/0
+            print_state/0,
+            get_next_colour/1
           ]).
 :- use_module(bfs, [adj/2]).
 :- use_module(predicates, [tile/5]).
@@ -53,7 +54,7 @@ initialize() :-
     assert(insertion_count(pillbug, b, 0)),
     
     %Set dummy last move
-    assert(last_move(-1, -1, a, b, c, d, f)).
+    assert(last_move(-1, b, a, x, c, d, f)).
 
 available(Bug, Colour) :-
     insertion_count(Bug, Colour, Count), !,
@@ -152,8 +153,12 @@ can_move(Bug, Colour, X, Y, Level) :-
 
 print_state() :-
     findall((Bug, Colour,X, Y,Level), tile(Bug, Colour,X, Y,Level), Tiles),
+    get_next_colour(NextColour),
     write("Current state of game: \n"),
-    print_tiles(Tiles).
+    print_tiles(Tiles),
+    write("Next player: "),
+    write(NextColour),
+    write("\n").
 
 
 print_tiles([(Bug, Colour,X, Y,Level)|R]):-
@@ -171,3 +176,11 @@ print_tiles([(Bug, Colour,X, Y,Level)|R]):-
     print_tiles(R).
 
 print_tiles([]).
+
+opposite_colour(w, b).
+opposite_colour(b, w).
+
+get_next_colour(Colour):-
+    last_move(_, LastColour,_,_,_,_,_),
+    opposite_colour(LastColour, Colour).
+

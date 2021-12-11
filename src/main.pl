@@ -9,7 +9,8 @@
                 is_game_over/0,
                 check_turn/1,
                 can_move/5,
-                print_state/0
+                print_state/0,
+                get_next_colour/1
               ]).
 
 :- use_module(moves, [get_top_bug/5, move/6, move/4,move/8]).
@@ -19,12 +20,13 @@
 start():-
     initialize(),
     write("Initialized Game, insert your next move. \n"),
-    write("You play with: 'w'. \n").
+    write("Next player: 'w'. \n").
     
 
 %Check if Bug is available for insertion!!!!!!
-insert_to(Bug, Colour):-
+insert_to(Bug):-
     move_count(0), %Is first insertion
+    get_next_colour(Colour),
     add_tile(Bug, Colour, 0, 0, 1),
     increase_move_count(),
     increase_bug_count(Bug,Colour),
@@ -32,7 +34,8 @@ insert_to(Bug, Colour):-
     print_state().
 
 
-insert_to(Bug, Colour, X, Y):-
+insert_to(Bug, X, Y):-
+    get_next_colour(Colour),
     check_turn(Colour),
     move_count(1), %Is second insertion
     add_tile(Bug, Colour, X, Y, 2),
@@ -44,7 +47,8 @@ insert_to(Bug, Colour, X, Y):-
     print_state().
 
 
-insert_to(Bug, Colour, X, Y):-
+insert_to(Bug, X, Y):-
+    get_next_colour(Colour),
     check_turn(Colour),
     check_queen_moves(Bug, Colour),
     available(Bug,Colour),
