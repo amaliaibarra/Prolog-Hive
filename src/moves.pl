@@ -1,7 +1,8 @@
 :- module(moves,
           [ get_top_bug/5,
             move/6,
-            move/4
+            move/4,
+            move/8
           ]).
 :- use_module(predicates,
               [ tile/5,

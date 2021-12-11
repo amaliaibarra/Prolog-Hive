@@ -127,23 +127,19 @@ is_surrounded(X, Y) :-
     findall((Xi, Yi),
             adj((X, Y),  (Xi, Yi)),
             Adjacents),
-    write("Queen adjacents that exists \n"),
     write(Adjacents),
     length(Adjacents, 6).
 
 check_turn(b) :-
     move_count(Count),
-    write("black turn\n"),
-    Count mod 2=:=1,
-    write("fua turn\n").
+    Count mod 2=:=1.
 
 
 check_turn(w) :-
     move_count(Count),
     write(Count),
-    write("white turn\n"),
-    Count mod 2=:=0,
-    write("fua2 turn\n").
+    Count mod 2=:=0.
+    
 
 can_move(Bug, Colour, X, Y, Level) :-
     not(last_move(Bug,
@@ -155,4 +151,23 @@ can_move(Bug, Colour, X, Y, Level) :-
                   _)), !.
 
 print_state() :-
-    write("Current state of game:\n").
+    findall((Bug, Colour,X, Y,Level), tile(Bug, Colour,X, Y,Level), Tiles),
+    write("Current state of game: \n"),
+    print_tiles(Tiles).
+
+
+print_tiles([(Bug, Colour,X, Y,Level)|R]):-
+    write("     ["),
+    write(X),
+    write(","),
+    write(Y),
+    write("]: "),
+    write(Bug),
+    write(", Colour: "),
+    write(Colour),
+    write(", Level: "),
+    write(Level), 
+    write("\n"), 
+    print_tiles(R).
+
+print_tiles([]).
