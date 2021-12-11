@@ -35,26 +35,33 @@ get_top_bug(Bug, Colour, X, Y, Level) :-
     max_list(Bag, Level),
     tile(Bug, Colour, X, Y, Level).
 
-common_validation(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow):-
+common_validation(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow) :-
     try_move(Bug,
-            Colour,
-            X1,
-            Y1,
-            Level,
-            X2,
-            Y2),
+             Colour,
+             X1,
+             Y1,
+             Level,
+             X2,
+             Y2),
     one_hive_rule_fullfill(Bug, Colour, X1, Y1, Level),
     move_tile(MoveToFollow,
-        Colour,
-        Level,
-        X1,
-        Y1,
-        X2,
-        Y2).
+              Colour,
+              Level,
+              X1,
+              Y1,
+              X2,
+              Y2).
 
-validate_general_move(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow):-
-    position_available(X2, Y2),!,
-    common_validation(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow).
+validate_general_move(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow) :-
+    position_available(X2, Y2), !,
+    common_validation(Bug,
+                      Colour,
+                      X1,
+                      Y1,
+                      Level,
+                      X2,
+                      Y2,
+                      MoveToFollow).
    
 %moving beetle/mosquito to pilled position
 validate_general_move(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow):-
@@ -126,6 +133,7 @@ move_tile(queen, Colour, Level, X1, Y1, X2, Y2) :-
     assert(tile(Bug, Colour, X2, Y2, Level)).
 
 move_tile(mosquito, Colour, Level, X1, Y1, X2, Y2) :-
+    Level > 0,
     beetle_move(mosquito, Colour, Level, X1, Y1, X2, Y2).
 
 move_tile(beetle, Colour, Level, X1, Y1, X2, Y2) :-
@@ -139,39 +147,39 @@ move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
 
 %check wether or not there is a path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ant, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_path(ant,
+    exist_path(Bug,
                Colour,
                X1,
                Y1,
                Level,
                X2,
                Y2),
-    remove_tile(ant, Colour, X1, Y1, Level),
-    assert(tile(ant, Colour, X2, Y2, Level)).
+    remove_tile(Bug, Colour, X1, Y1, Level),
+    assert(tile(Bug, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(spider, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tiles_path(spider,
+    exist_3tiles_path(Bug,
                       Colour,
                       X1,
                       Y1,
                       Level,
                       X2,
                       Y2),
-    remove_tile(spider, Colour, X1, Y1, Level),
-    assert(tile(spider, Colour, X2, Y2, Level)).
+    remove_tile(Bug, Colour, X1, Y1, Level),
+    assert(tile(Bug, Colour, X2, Y2, Level)).
 
 %check wether or not there is a 3 tiles path from (X1,Y1) to (X2,Y2) with just empty celds surrounding the hive
 move_tile(ladybug, Colour, Level, X1, Y1, X2, Y2) :-
-    exist_3tilesjumping_path(spider,
+    exist_3tilesjumping_path(Bug,
                              Colour,
                              X1,
                              Y1,
                              Level,
                              X2,
                              Y2),
-    remove_tile(ladybug, Colour, X1, Y1, Level),
-    assert(tile(ladybug, Colour, X2, Y2, Level)).
+    remove_tile(Bug, Colour, X1, Y1, Level),
+    assert(tile(Bug, Colour, X2, Y2, Level)).
 
 move_tile(pillbug, X1, Y1, X2, Y2, X3, Y3, _) :-
     is_adjacent(X1, Y1, X3, Y3), !,

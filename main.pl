@@ -35,6 +35,7 @@ insert_to(Bug, Colour):-
     write("last move updated").
 
 insert_to(Bug, Colour, X, Y):-
+    check_turn(Colour),
     move_count(1), %Is second insertion
     add_tile(Bug, Colour, X, Y, 2),
     increase_move_count(),
@@ -42,6 +43,7 @@ insert_to(Bug, Colour, X, Y):-
     update_last_move(Bug, Colour, X, Y,0, false,false),!.
 
 insert_to(Bug, Colour, X, Y):-
+    check_turn(Colour),
     check_queen_moves(Bug, Colour),
     write("Queen moves true"),
     available(Bug,Colour),
@@ -67,3 +69,20 @@ move_to(X1,Y1,X2,Y2):-
 move_to(_,_,_,_):-
     is_game_over(Loser),
     print_state(Loser).
+
+move_to(X1,Y1,X2,Y2,X3,Y3):-
+    get_top_bug(Bug, Colour, X1, Y1, Level),
+    check_turn(Colour),
+    check_queen_moves(Bug, Colour),
+    can_move(Bug, Colour, X2, Y2,Level ),
+    move(X1,Y1,X2,Y2,X3,Y3),!,
+    get_top_bug(Bugi, Colouri, X3, Y3, NewLevel),
+    update_last_move(Bugi, Colouri, X3, Y3, NewLevel, true,true),
+    increase_move_count(),
+    not(is_game_over(_)),!,
+    print_state().
+
+move_to(_,_,_,__,_):-
+    is_game_over(Loser),
+    print_state(Loser).
+

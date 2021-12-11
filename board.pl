@@ -118,28 +118,24 @@ is_surrounded(X, Y) :-
     findall((Xi, Yi),
             adj((X, Y),  (Xi, Yi)),
             Adjacents),
+    write("Queen adjacents that exists \n"),
+    write(Adjacents),
     length(Adjacents, 6).
 
 check_turn(b) :-
-    (   last_move(_,
-                  w,
-                  _,
-                  _,
-                  _,
-                  _,
-                  _)
-    ;   last_move(_, b, _, _, _, true, true)
-    ).
+    move_count(Count),
+    write("black turn\n"),
+    Count mod 2=:=1,
+    write("fua turn\n").
+
+
 check_turn(w) :-
-    (   last_move(_,
-                  b,
-                  _,
-                  _,
-                  _,
-                  _,
-                  _)
-    ;   last_move(_, w, _, _, _, true, true)
-    ).
+    move_count(Count),
+    write(Count),
+    write("white turn\n"),
+    Count mod 2=:=0,
+    write("fua2 turn\n").
+
 can_move(Bug, Colour, X, Y, Level) :-
     not(last_move(Bug,
                   Colour,

@@ -1,0 +1,32 @@
+?- insert_to(mosquito,b,1,1).
+HEREQueen moves trueAvailableTIle addedmove count increased
+true.
+
+?- insert_to(mosquito,w,-1,-1).
+HEREQueen moves trueAvailableTIle addedmove count increased
+true.
+
+?- move_to(1,1,1,0).
+HERECurrent state of game:
+true.
+
+?- move_to(-1,-1,0,-1).
+HERE
+false.
+
+?- move_to(-1,-1,-1,1).
+HERE
+false.
+
+?- move_to(-1,-1,-1,4).
+Current state of game: 
+Game over, Loser is: w
+true.
+
+?- tile(Bug,Colour,-1,1,L).
+Bug = mosquito,
+Colour = w,
+L = 0.
+
+?- tile(Bug,Colour,-1,4,L).
+false.
