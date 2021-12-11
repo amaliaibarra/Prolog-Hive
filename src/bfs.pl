@@ -7,6 +7,7 @@
           ]).
 
 :- use_module(predicates, [tile/5, remove_tile/5, check_adjacents/3]).
+:- use_module(validations, [not_blocked/5]).
 
 
 adj((X, Y),  (X2, Y2)) :-
@@ -87,7 +88,8 @@ bfsft(Source, Destination):- bfsfta([Source], [Source], Destination).
 bfsfta([[X,Y]|_R], _Seen, [X, Y]).
 bfsfta([[X,Y]|R], Seen, [Xd, Yd]):- 
     bagof([X2, Y2],
-        (free_adj_tile((X,Y),(X2, Y2)), 
+        (free_adj_tile((X,Y),(X2, Y2)),
+        not_blocked(X, Y, X2, Y2, _Bridges), 
         not(member([X2,Y2], Seen))), Adj),
     append(Seen, Adj, UpdSeen), 
     append(R, Adj, UpdR), !,
@@ -116,6 +118,7 @@ bfs3tpa([[X, Y, 3]|_R], _Seen, [X, Y]).
 bfs3tpa([[X, Y, L]|R], Seen, [Xd, Yd]):- 
     bagof([X2, Y2],
         (free_adj_tile((X,Y),(X2, Y2)), 
+        not_blocked(X, Y, X2, Y2, _Bridges), 
         not(member([X2,Y2], Seen))), Adj),
     LP is L+1,
     add_element_to_list(Adj, LP, NewAdj),
@@ -140,7 +143,9 @@ bfs3jp([X,Y], Destination):- bfs3jpa([[X, Y, 0]], [[X, Y]], Destination).
 
 bfs3jpa([[X, Y, 2]|R], Seen, [Xd, Yd]):- 
     bagof([X2, Y2],
-        (free_adj_tile((X,Y),(X2, Y2)), not(member([X2, Y2, 3], Seen))), Adj),
+        (free_adj_tile((X,Y),(X2, Y2)), 
+        not(member([X2, Y2, 3], Seen))
+        ), Adj),
     add_element_to_list(Adj, 3, NewAdj),
     append(Seen, NewAdj, UpdSeen), 
     append(R, NewAdj, UpdR), !,

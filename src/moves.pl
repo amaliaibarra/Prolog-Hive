@@ -4,6 +4,7 @@
             move/4,
             move/8
           ]).
+
 :- use_module(predicates,
               [ tile/5,
                 is_adjacent/4,
@@ -12,7 +13,9 @@
                 check_adjacents/3,
                 remove_tile/5
               ]).
-:- use_module(validations, [pilled/2, validate_grasshoper_move/4]).
+
+:- use_module(validations, [pilled/2, validate_grasshoper_move/4, not_blocked/5]).
+
 :- use_module(bfs,
               [ one_hive_rule_fullfill/5,
                 exist_path/7,
@@ -130,6 +133,7 @@ move_tile(grasshopper, Colour, Level, X1, Y1, X2, Y2) :-
 
 move_tile(queen, Colour, Level, X1, Y1, X2, Y2) :-
     is_adjacent(X1,Y1, X2, Y2),
+    not_blocked(X1, Y1, X2, Y2, _Bridges), 
     remove_tile(Bug, Colour, X1, Y1, Level),
     assert(tile(Bug, Colour, X2, Y2, Level)).
 
@@ -143,6 +147,7 @@ move_tile(beetle, Colour, Level, X1, Y1, X2, Y2) :-
 
 move_tile(pillbug, Colour, Level, X1, Y1, X2, Y2) :-
     is_adjacent(X1,Y1, X2, Y2),
+    not_blocked(X1, Y1, X2, Y2, _Bridges), 
     remove_tile(Bug, Colour, X1, Y1, Level),
     assert(tile(Bug, Colour, X2, Y2, Level)).
 
