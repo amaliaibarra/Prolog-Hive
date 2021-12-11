@@ -6,11 +6,10 @@
             increase_move_count/0,
             increase_bug_count/2,
             check_queen_moves/2,
-            is_game_over/1,
+            is_game_over/0,
             check_turn/1,
             can_move/5,
-            print_state/0,
-            print_state/1
+            print_state/0
           ]).
 :- use_module(bfs, [adj/2]).
 :- use_module(predicates, [tile/5]).
@@ -98,7 +97,7 @@ increase_bug_count(Bug, Colour) :-
 
 check_queen_moves(Bug, Colour) :-
     (   tile(queen, Colour, _, _, _),
-        write("HERE"), !
+        !
     ;   Bug==queen
     ).
 
@@ -110,9 +109,19 @@ check_queen_moves(_, b) :-
     move_count(Count),
     Count<7.
 
-is_game_over(Colour) :-
+is_game_over() :-
+    tie(),!;
     tile(queen, Colour, X, Y, _),
-    is_surrounded(X, Y), !.
+    is_surrounded(X, Y), !,
+    write("GAME OVER, LOSER:"),
+    write(Colour).
+
+tie():-
+    tile(queen, w, X1, Y1, _),
+    is_surrounded(X1, Y1),
+    tile(queen, b, X2, Y2, _),
+    is_surrounded(X2, Y2),
+    write("GAME OVER, IT'S A TIE").
 
 is_surrounded(X, Y) :-
     findall((Xi, Yi),
@@ -147,8 +156,3 @@ can_move(Bug, Colour, X, Y, Level) :-
 
 print_state() :-
     write("Current state of game:\n").
-
-print_state(Loser) :-
-    write("Current state of game: \n"),
-    write("Game over, Loser is: "),
-    write(Loser).

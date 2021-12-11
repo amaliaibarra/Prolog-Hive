@@ -6,11 +6,10 @@
                 increase_move_count/0,
                 increase_bug_count/2,
                 check_queen_moves/2,
-                is_game_over/1,
+                is_game_over/0,
                 check_turn/1,
                 can_move/5,
-                print_state/0,
-                print_state/1
+                print_state/0
               ]).
 
 :- use_module(moves, [get_top_bug/5, move/6, move/4]).
@@ -19,7 +18,8 @@
 
 start():-
     initialize(),
-    write("Initialized").
+    write("Initialized Game, insert your next move. \n"),
+    write("You play with: 'w'. \n").
     
 
 %Check if Bug is available for insertion!!!!!!
@@ -40,7 +40,9 @@ insert_to(Bug, Colour, X, Y):-
     add_tile(Bug, Colour, X, Y, 2),
     increase_move_count(),
     increase_bug_count(Bug,Colour),
-    update_last_move(Bug, Colour, X, Y,0, false,false),!.
+    update_last_move(Bug, Colour, X, Y,0, false,false),
+    not(is_game_over()),
+    !.
 
 insert_to(Bug, Colour, X, Y):-
     check_turn(Colour),
@@ -52,7 +54,12 @@ insert_to(Bug, Colour, X, Y):-
     write("TIle added"),
     increase_move_count(),
     write("move count increased"),
-    update_last_move(Bug, Colour, X, Y,0, false,false),!.
+    update_last_move(Bug, Colour, X, Y,0, false,false),!,
+    not(is_game_over()).
+
+insert_to(_, _, _, _):-
+    is_game_over().
+
 
 move_to(X1,Y1,X2,Y2):-
     get_top_bug(Bug, Colour, X1, Y1, Level),
@@ -67,8 +74,7 @@ move_to(X1,Y1,X2,Y2):-
     print_state().
 
 move_to(_,_,_,_):-
-    is_game_over(Loser),
-    print_state(Loser).
+    is_game_over().
 
 move_to(X1,Y1,X2,Y2,X3,Y3):-
     get_top_bug(Bug, Colour, X1, Y1, Level),
@@ -82,7 +88,20 @@ move_to(X1,Y1,X2,Y2,X3,Y3):-
     not(is_game_over(_)),!,
     print_state().
 
-move_to(_,_,_,__,_):-
-    is_game_over(Loser),
-    print_state(Loser).
+move_to(_,_,_,_,_,_):-
+    is_game_over().
 
+move_to(X1,Y1,X2,Y2,X3,Y3,X4,Y4):-
+    get_top_bug(Bug, Colour, X1, Y1, Level),
+    check_turn(Colour),
+    check_queen_moves(Bug, Colour),
+    can_move(Bug, Colour, X3, Y3,Level ),
+    move(X1,Y1,X2,Y2,X3,Y3,X4,Y4),!,
+    get_top_bug(Bugi, Colouri, X4, Y4, NewLevel),
+    update_last_move(Bugi, Colouri, X4, Y4, NewLevel, true,true),
+    increase_move_count(),
+    not(is_game_over(_)),!,
+    print_state().
+
+move_to(_,_,_,_,_,_,_,_):-
+    is_game_over().
