@@ -20,7 +20,7 @@
 start():-
     initialize(),
     write("Initialized Game, insert your next move. \n"),
-    write("You play with: 'w'. \n").
+    write("Next player: 'w'. \n").
     
 
 %Check if Bug is available for insertion!!!!!!
