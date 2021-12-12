@@ -12,8 +12,12 @@
             print_state/0,
             get_next_colour/1,
             next_colour/1,
-            change_color/0
+            change_color/0,
+            queen_in_game/1
           ]).
+:- use_module(moves,
+          [ get_top_bug/5]).
+
 :- use_module(bfs, [adj/2]).
 :- use_module(predicates, [tile/5]).
 
@@ -192,3 +196,5 @@ change_color():-
     assert(next_colour(NewColour)).
 
 
+queen_in_game(Colour):-
+    tile(queen,Colour,_,_,_).
