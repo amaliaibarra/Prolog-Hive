@@ -12,7 +12,8 @@
                 print_state/0,
                 get_next_colour/1,
                 next_colour/1,
-            change_color/0
+            change_color/0,
+            queen_in_game/1
               ]).
 
 :- use_module(moves, [get_top_bug/5, move/6, move/4,move/8]).
@@ -69,6 +70,7 @@ insert_to(_, _, _, _):-
 
 move_to(X1,Y1,X2,Y2):-
     get_top_bug(Bug, Colour, X1, Y1, Level),
+    queen_in_game(Colour),
     check_turn(Colour),
     check_queen_moves(Bug, Colour),
     can_move(Bug, Colour, X1, Y1,Level ),
@@ -85,6 +87,7 @@ move_to(_,_,_,_):-
 
 move_to(X1,Y1,X2,Y2,X3,Y3):-
     get_top_bug(Bug, Colour, X1, Y1, _),
+    queen_in_game(Colour),
     check_turn(Colour),
     check_queen_moves(Bug, Colour),
     tile(Bug2, Colour2, X2, Y2,Level2),
@@ -102,6 +105,7 @@ move_to(_,_,_,_,_,_):-
 
 move_to(X1,Y1,X2,Y2,X3,Y3,X4,Y4):-
     get_top_bug(Bug1, Colour1, X1, Y1, _),
+    queen_in_game(Colour1),
     check_turn(Colour1),
     check_queen_moves(Bug1, Colour1),
     tile(Bug3, Colour3, X3, Y3,Level3 ),

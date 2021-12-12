@@ -7,7 +7,8 @@
             add_tile/5,
             remove_tile/5
           ]).
-
+:- use_module(moves,
+            [ get_top_bug/5]).
 
 :- (dynamic tile/5).
 
