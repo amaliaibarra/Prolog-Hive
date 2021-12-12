@@ -1,7 +1,8 @@
 :- module(validations,
           [ pilled/2,
             validate_grasshoper_move/4,
-            not_blocked/5
+            not_blocked/5,
+            not_blocked_two_level_bridge/5
           ]).
 
 :- use_module(predicates, [tile/5]).
@@ -10,7 +11,6 @@ pilled(X, Y) :-
     findall(L,
             tile(_, _, X, Y, L),
             Bag), %Check if it's pilled
-    write(Bag),
     max_list(Bag, MaxLevel),
     MaxLevel>=1. %Bag has at least two elements
 
@@ -43,7 +43,7 @@ bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
 
 bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
     X2 is X,
-    Y2 is Y-1,
+    Y2 is Y-1,!,
     X3 is X-1,
     Y3 is Y,
     X4 is X+1,
@@ -51,7 +51,7 @@ bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
 
 bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
     X2 is X+1,
-    Y2 is Y-1,
+    Y2 is Y-1,!,
     X3 is X,
     Y3 is Y-1,
     X4 is X+1,
@@ -59,7 +59,7 @@ bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
 
 bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
     X2 is X+1,
-    Y2 is Y,
+    Y2 is Y,!,
     X3 is X+1,
     Y3 is Y-1,
     X4 is X,
@@ -67,22 +67,29 @@ bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
 
 bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
     X2 is X,
-    Y2 is Y+1,
+    Y2 is Y+1,!,
     X3 is X+1,
     Y3 is Y,
     X4 is X-1,
-    Y4 is Y.
+    Y4 is Y+1.
 
 bridges_per_direction((X, Y), (X2, Y2), (X3, Y3), (X4, Y4)):-
     X2 is X-1,
-    Y2 is Y+1,
+    Y2 is Y+1,!,
     X3 is X,
     Y3 is Y+1,
     X4 is X-1,
     Y4 is Y.
-    
+        
 not_blocked(X1, Y1, X2, Y2, Bridges):- 
     not(bagof([(X3,Y3), (X4,Y4)], 
             (bridges_per_direction((X1,Y1), (X2,Y2), (X3,Y3), (X4,Y4)),
             tile(_, _, X3, Y3, _), tile(_, _, X4, Y4, _)),
+            Bridges)).
+
+
+not_blocked_two_level_bridge(X1, Y1, X2, Y2, Bridges):- 
+    not(bagof([(X3,Y3), (X4,Y4)], 
+            (bridges_per_direction((X1,Y1), (X2,Y2), (X3,Y3), (X4,Y4)),
+            tile(_, _, X3, Y3, 1), tile(_, _, X4, Y4, 1)),
             Bridges)).

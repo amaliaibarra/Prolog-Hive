@@ -10,7 +10,9 @@
             check_turn/1,
             can_move/5,
             print_state/0,
-            get_next_colour/1
+            get_next_colour/1,
+            next_colour/1,
+            change_color/0
           ]).
 :- use_module(bfs, [adj/2]).
 :- use_module(predicates, [tile/5]).
@@ -20,11 +22,13 @@
 :- (dynamic queen_in_game/1).
 :- (dynamic insertion_count/3).
 :- (dynamic last_move/7).
+:- (dynamic next_colour/1).
+
 
 initialize() :-
     %Set number of moves
     assert(move_count(0)),
-    
+    assert(next_colour(w)),
     %Set maximum number of tiles per bug
     assert(max_count(queen, 1)),
     assert(max_count(ant, 3)),
@@ -128,7 +132,6 @@ is_surrounded(X, Y) :-
     findall((Xi, Yi),
             adj((X, Y),  (Xi, Yi)),
             Adjacents),
-    write(Adjacents),
     length(Adjacents, 6).
 
 check_turn(b) :-
@@ -138,7 +141,6 @@ check_turn(b) :-
 
 check_turn(w) :-
     move_count(Count),
-    write(Count),
     Count mod 2=:=0.
     
 
@@ -153,7 +155,7 @@ can_move(Bug, Colour, X, Y, Level) :-
 
 print_state() :-
     findall((Bug, Colour,X, Y,Level), tile(Bug, Colour,X, Y,Level), Tiles),
-    get_next_colour(NextColour),
+    next_colour(NextColour),
     write("Current state of game: \n"),
     print_tiles(Tiles),
     write("Next player: "),
@@ -183,4 +185,10 @@ opposite_colour(b, w).
 get_next_colour(Colour):-
     last_move(_, LastColour,_,_,_,_,_),
     opposite_colour(LastColour, Colour).
+
+change_color():-
+    retract(next_colour(Colour)),
+    opposite_colour(Colour,NewColour),
+    assert(next_colour(NewColour)).
+
 

@@ -14,7 +14,7 @@
                 remove_tile/5
               ]).
 
-:- use_module(validations, [pilled/2, validate_grasshoper_move/4, not_blocked/5]).
+:- use_module(validations, [pilled/2, validate_grasshoper_move/4, not_blocked/5, not_blocked_two_level_bridge/5]).
 
 :- use_module(bfs,
               [ one_hive_rule_fullfill/5,
@@ -74,10 +74,12 @@ validate_general_move(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow):-
     MoveToFollow == beetle,
     common_validation(Bug, Colour, X1, Y1, Level, X2, Y2, MoveToFollow).
 
-validate_pillbug_power(_Bugname, Colour, X1, Y1, Level, X2, Y2, X3, Y3):-
+validate_pillbug_power(_Bugname, _, X1, Y1, _, X2, Y2, X3, Y3):-
     position_available(X3, Y3), !,
     not(pilled(X1, Y1)), !, %pillbug is not blocked
-    one_hive_rule_fullfill(_Bug, Colour, X2, Y2, Level),
+    one_hive_rule_fullfill(_Bug, _, X2, Y2, _),
+    not_blocked_two_level_bridge(X2, Y2, X1, Y1, _),
+    not_blocked_two_level_bridge(X1, Y1, X3, Y3, _),
     move_tile(pillbug,
               X1,
               Y1,

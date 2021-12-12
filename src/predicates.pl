@@ -85,5 +85,5 @@ add_tile(Bug, Colour, X, Y, Move) :-
     assert(tile(Bug, Colour, X, Y, 0)).
 
 remove_tile(Bug, Colour, X, Y, Level):-
-    tile(Bug, Colour, X, Y, Level),
+    get_top_bug(Bug, Colour, X, Y, Level),
     retract(tile(Bug, Colour, X, Y, Level)).
